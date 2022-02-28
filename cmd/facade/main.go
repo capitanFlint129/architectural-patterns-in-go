@@ -1,8 +1,5 @@
 package main
 
-// TODO отформатировать импорты
-// TODO почитать и поправить модули убрать mod
-// TODO почитать про линтер
 import (
 	"fmt"
 
@@ -15,7 +12,7 @@ const (
 	c = 5
 )
 
-func useConverter(converter converter) error {
+func useConverter(converter facade.Converter) error {
 	er := converter.Convert()
 	if er != nil {
 		return fmt.Errorf("Error in facade")

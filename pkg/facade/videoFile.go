@@ -2,7 +2,9 @@ package facade
 
 import "fmt"
 
-// TODO добавить интерфейс
+type file interface {
+	check(z int) error
+}
 
 type videoFile struct {
 	x int
@@ -16,8 +18,7 @@ func (f *videoFile) check(z int) error {
 	return nil
 }
 
-// TODO возвращаем интерфейс а не класс
-func newVideoFile(x int, y int) *videoFile {
+func newVideoFile(x int, y int) *file {
 	return &videoFile{
 		x: x,
 		y: y,

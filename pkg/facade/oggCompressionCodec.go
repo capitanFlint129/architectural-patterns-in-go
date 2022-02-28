@@ -2,6 +2,11 @@ package facade
 
 import "fmt"
 
+type codec interface {
+	notify()
+	multiply(n int)
+}
+
 type oggCompressionCodec struct {
 	x int
 }
@@ -15,7 +20,7 @@ func (s *oggCompressionCodec) multiply(n int) {
 	s.x *= n
 }
 
-func newOggCompressionCodec(x int) *oggCompressionCodec {
+func newOggCompressionCodec(x int) *codec {
 	return &oggCompressionCodec{
 		x: x,
 	}

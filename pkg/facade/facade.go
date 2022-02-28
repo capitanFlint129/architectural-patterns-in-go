@@ -2,20 +2,19 @@ package facade
 
 import "fmt"
 
-// TODO добавить комменты в интерфейс
+// Converter converts files
 type Converter interface {
-	// Converter of diff
 	Convert() error
 }
 
-// TODO не публичный
-type VideoConverter struct {
+type videoConverter struct {
 	multiplier int
-	videoFile  *videoFile
-	codec      *oggCompressionCodec
+	videoFile  *file
+	codec      *codec
 }
 
-func (v *VideoConverter) Convert() error {
+// Convert executes conversion
+func (v *videoConverter) Convert() error {
 	fmt.Println("Сonversion started")
 	er := v.videoFile.check(10)
 	if er != nil {
@@ -30,7 +29,7 @@ func (v *VideoConverter) Convert() error {
 	return nil
 }
 
-func (v *VideoConverter) privateAction(someInt int) error {
+func (v *videoConverter) privateAction(someInt int) error {
 	fmt.Println("Private action started")
 	er := v.videoFile.check(someInt)
 	if er != nil {
@@ -42,13 +41,13 @@ func (v *VideoConverter) privateAction(someInt int) error {
 	return nil
 }
 
-func NewVideoConverter(a int, b int, c int) *VideoConverter {
-	// Creates a fake video converter
-	Converter := &VideoConverter{
+// NewVideoConverter creates a fake video converter
+func NewVideoConverter(a int, b int, c int) *videoConverter {
+	Converter := &videoConverter{
 		videoFile:  newVideoFile(a, b),
 		codec:      newOggCompressionCodec(c),
 		multiplier: a + b + c,
 	}
-	fmt.Println("New VideoConverter created")
+	fmt.Println("New videoConverter created")
 	return Converter
 }
