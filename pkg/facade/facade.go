@@ -2,6 +2,13 @@ package facade
 
 import "fmt"
 
+// TODO добавить комменты в интерфейс
+type Converter interface {
+	// Converter of diff
+	Convert() error
+}
+
+// TODO не публичный
 type VideoConverter struct {
 	multiplier int
 	videoFile  *videoFile
