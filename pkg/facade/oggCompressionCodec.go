@@ -20,8 +20,9 @@ func (s *oggCompressionCodec) multiply(n int) {
 	s.x *= n
 }
 
-func newOggCompressionCodec(x int) *codec {
-	return &oggCompressionCodec{
+func newOggCompressionCodec(x int) codec {
+	codec := codec(&oggCompressionCodec{
 		x: x,
-	}
+	})
+	return codec
 }

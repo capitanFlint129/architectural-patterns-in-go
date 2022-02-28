@@ -18,9 +18,10 @@ func (f *videoFile) check(z int) error {
 	return nil
 }
 
-func newVideoFile(x int, y int) *file {
-	return &videoFile{
+func newVideoFile(x int, y int) file {
+	file := file(&videoFile{
 		x: x,
 		y: y,
-	}
+	})
+	return file
 }

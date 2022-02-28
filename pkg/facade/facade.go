@@ -9,8 +9,8 @@ type Converter interface {
 
 type videoConverter struct {
 	multiplier int
-	videoFile  *file
-	codec      *codec
+	videoFile  file
+	codec      codec
 }
 
 // Convert executes conversion
@@ -42,12 +42,12 @@ func (v *videoConverter) privateAction(someInt int) error {
 }
 
 // NewVideoConverter creates a fake video converter
-func NewVideoConverter(a int, b int, c int) *videoConverter {
-	Converter := &videoConverter{
+func NewVideoConverter(a int, b int, c int) Converter {
+	Converter := Converter(&videoConverter{
+		multiplier: a + b + c,
 		videoFile:  newVideoFile(a, b),
 		codec:      newOggCompressionCodec(c),
-		multiplier: a + b + c,
-	}
+	})
 	fmt.Println("New videoConverter created")
 	return Converter
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"go-facade/pkg/facade"
+	"architectural-patterns-in-go/pkg/facade"
 )
 
 const (
