@@ -51,10 +51,10 @@ func (v *videoConverter) privateAction(someInt int) error {
 }
 
 // NewVideoConverter creates a fake video converter
-func NewVideoConverter(a int, b int, c int) Converter {
+func NewVideoConverter(a int, b int, c int, videoFile file, codec codec) Converter {
 	return &videoConverter{
 		multiplier: a + b + c,
-		videoFile:  NewVideoFile(a, b),
-		codec:      NewOggCompressionCodec(c),
+		videoFile:  videoFile,
+		codec:      codec,
 	}
 }
