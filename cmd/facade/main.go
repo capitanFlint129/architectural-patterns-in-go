@@ -13,13 +13,7 @@ const (
 )
 
 var (
-	config = Config{
-		a:     a,
-		b:     b,
-		c:     c,
-		file:  facade.NewVideoFile(a, b),
-		codec: facade.NewOggCompressionCodec(c),
-	}
+	config = Config{a, b, c, facade.NewVideoFile(a, b), facade.NewOggCompressionCodec(c)}
 )
 
 func useConverter(converter facade.Converter) error {
