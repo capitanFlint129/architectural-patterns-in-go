@@ -2,6 +2,15 @@ package facade
 
 import "fmt"
 
+type file interface {
+	check(z int) error
+}
+
+type codec interface {
+	notify()
+	multiply(n int)
+}
+
 // Converter converts files
 type Converter interface {
 	Convert() error
@@ -43,11 +52,9 @@ func (v *videoConverter) privateAction(someInt int) error {
 
 // NewVideoConverter creates a fake video converter
 func NewVideoConverter(a int, b int, c int) Converter {
-	Converter := Converter(&videoConverter{
+	return &videoConverter{
 		multiplier: a + b + c,
-		videoFile:  newVideoFile(a, b),
-		codec:      newOggCompressionCodec(c),
-	})
-	fmt.Println("New videoConverter created")
-	return Converter
+		videoFile:  NewVideoFile(a, b),
+		codec:      NewOggCompressionCodec(c),
+	}
 }
