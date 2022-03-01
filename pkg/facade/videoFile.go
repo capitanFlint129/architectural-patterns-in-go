@@ -2,7 +2,7 @@ package facade
 
 import "fmt"
 
-type file interface {
+type File interface {
 	check(z int) error
 }
 
@@ -18,10 +18,9 @@ func (f *videoFile) check(z int) error {
 	return nil
 }
 
-func newVideoFile(x int, y int) file {
-	file := file(&videoFile{
+func NewVideoFile(x int, y int) File {
+	return &videoFile{
 		x: x,
 		y: y,
-	})
-	return file
+	}
 }
