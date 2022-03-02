@@ -1,7 +1,5 @@
 package builder
 
-import "github.com/capitanFlint129/architectural-patterns-in-go/pkg/product"
-
 type manualBuilder struct {
 	seatsNumber       int
 	enginePower       int
@@ -10,7 +8,7 @@ type manualBuilder struct {
 	manualCreator     CarCreator
 }
 
-func (m *manualBuilder) GetResult() product.Product {
+func (m *manualBuilder) GetResult() product {
 	return m.manualCreator(
 		m.seatsNumber,
 		m.enginePower,
@@ -19,19 +17,19 @@ func (m *manualBuilder) GetResult() product.Product {
 	)
 }
 
-func (m *manualBuilder) setSeats(seatsNumber int) {
+func (m *manualBuilder) SetSeats(seatsNumber int) {
 	m.seatsNumber = seatsNumber
 }
 
-func (m *manualBuilder) setEngine(enginePower int) {
+func (m *manualBuilder) SetEngine(enginePower int) {
 	m.enginePower = enginePower
 }
 
-func (m *manualBuilder) setTripComputer(tripComputerModel string) {
+func (m *manualBuilder) SetTripComputer(tripComputerModel string) {
 	m.tripComputerModel = tripComputerModel
 }
 
-func (m *manualBuilder) setGps(gpsModel string) {
+func (m *manualBuilder) SetGps(gpsModel string) {
 	m.gpsModel = gpsModel
 }
 

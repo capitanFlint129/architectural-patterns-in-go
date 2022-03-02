@@ -1,7 +1,5 @@
 package builder
 
-import "github.com/capitanFlint129/architectural-patterns-in-go/pkg/product"
-
 type carBuilder struct {
 	seatsNumber       int
 	enginePower       int
@@ -10,7 +8,7 @@ type carBuilder struct {
 	carCreator        CarCreator // functor - скрываем конструктор за параметром и не привязываемся к конкретному
 }
 
-func (c *carBuilder) GetResult() product.Product {
+func (c *carBuilder) GetResult() product {
 	return c.carCreator(
 		c.seatsNumber,
 		c.enginePower,
@@ -19,19 +17,19 @@ func (c *carBuilder) GetResult() product.Product {
 	)
 }
 
-func (c *carBuilder) setSeats(seatsNumber int) {
+func (c *carBuilder) SetSeats(seatsNumber int) {
 	c.seatsNumber = seatsNumber
 }
 
-func (c *carBuilder) setEngine(enginePower int) {
+func (c *carBuilder) SetEngine(enginePower int) {
 	c.enginePower = enginePower
 }
 
-func (c *carBuilder) setTripComputer(tripComputerModel string) {
+func (c *carBuilder) SetTripComputer(tripComputerModel string) {
 	c.tripComputerModel = tripComputerModel
 }
 
-func (c *carBuilder) setGps(gpsModel string) {
+func (c *carBuilder) SetGps(gpsModel string) {
 	c.gpsModel = gpsModel
 }
 

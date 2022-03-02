@@ -1,17 +1,17 @@
 package product
 
-type Car struct {
+type car struct {
 	seatsNumber       int
 	enginePower       int
 	tripComputerModel string
 	gpsModel          string
 }
 
-func CarCreator(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
-	return &Car{
-		seatsNumber,
-		enginePower,
-		tripComputerModel,
-		gpsModel,
+func NewCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
+	return &car{
+		seatsNumber:       seatsNumber,
+		enginePower:       enginePower,
+		tripComputerModel: tripComputerModel,
+		gpsModel:          gpsModel,
 	}
 }

@@ -1,14 +1,14 @@
 package builder
 
-import "github.com/capitanFlint129/architectural-patterns-in-go/pkg/product"
+type product = interface{}
 
 type Builder interface {
-	GetResult() product.Product
+	GetResult() product
 
-	setSeats(seatsNumber int)
-	setEngine(enginePower int)
-	setTripComputer(tripComputerModel string)
-	setGps(gpsModel string)
+	SetSeats(seatsNumber int)
+	SetEngine(enginePower int)
+	SetTripComputer(tripComputerModel string)
+	SetGps(gpsModel string)
 }
 
-type CarCreator func(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) product.Product
+type CarCreator func(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) product

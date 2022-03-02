@@ -1,3 +1,3 @@
 package product
 
-type Product interface{}
+type Product = interface{}

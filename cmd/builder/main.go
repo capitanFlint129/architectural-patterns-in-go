@@ -9,22 +9,22 @@ import (
 
 var config = builder.Config{
 	SuvCarParameters: builder.CarParameters{
-		6,
-		1000,
-		"SUV car computer",
-		"Super GPS",
+		SeatsNumber:       6,
+		EnginePower:       1000,
+		TripComputerModel: "SUV car computer",
+		GpsModel:          "Super GPS",
 	},
 	SportCarParameters: builder.CarParameters{
-		1,
-		700,
-		"Super sports car computer",
-		"Cheap GPS",
+		SeatsNumber:       1,
+		EnginePower:       700,
+		TripComputerModel: "Super sports car computer",
+		GpsModel:          "Cheap GPS",
 	},
 }
 
 func main() {
 	// строим машины
-	carBuilder := builder.NewCarBuilder(product.CarCreator)
+	carBuilder := builder.NewCarBuilder(product.NewCar)
 	director := builder.NewCarDirector()
 	director.SetBuilder(carBuilder)
 	director.ConstructSuvCar(
@@ -43,7 +43,7 @@ func main() {
 	sportsCar := carBuilder.GetResult()
 
 	// пишем инструкции
-	manualBuilder := builder.NewManualBuilder(product.ManualCreator)
+	manualBuilder := builder.NewManualBuilder(product.NewManual)
 	director.SetBuilder(manualBuilder)
 	director.ConstructSuvCar(
 		config.SuvCarParameters.SeatsNumber,
