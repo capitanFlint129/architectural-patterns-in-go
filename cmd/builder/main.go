@@ -7,14 +7,14 @@ import (
 	"architectural-patterns-in-go/pkg/product"
 )
 
-var config = Config{
-	SuvCarParameters: CarParameters{
+var config = builder.Config{
+	SuvCarParameters: builder.CarParameters{
 		6,
 		1000,
 		"SUV car computer",
 		"Super GPS",
 	},
-	SportCarParameters: CarParameters{
+	SportCarParameters: builder.CarParameters{
 		1,
 		700,
 		"Super sports car computer",

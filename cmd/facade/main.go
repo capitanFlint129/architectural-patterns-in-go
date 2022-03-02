@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	config = Config{a, b, c, facade.NewVideoFile(a, b), facade.NewOggCompressionCodec(c)}
+	config = facade.Config{a, b, c, facade.NewVideoFile(a, b), facade.NewOggCompressionCodec(c)}
 )
 
 func useConverter(converter facade.Converter) error {
@@ -25,7 +25,7 @@ func useConverter(converter facade.Converter) error {
 }
 
 func main() {
-	videoConverterFacade := facade.NewVideoConverter(config.a, config.b, config.c, config.file, config.codec)
+	videoConverterFacade := facade.NewVideoConverter(config.A, config.B, config.C, config.File, config.Codec)
 	er := useConverter(videoConverterFacade)
 	if er != nil {
 		fmt.Println("Error when use converter")

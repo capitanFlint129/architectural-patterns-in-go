@@ -1,4 +1,4 @@
-package main
+package builder
 
 type Config struct {
 	SuvCarParameters   CarParameters
