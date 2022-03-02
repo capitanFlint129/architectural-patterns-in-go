@@ -1,7 +1,7 @@
 package builder
 
 // определяет контракт взаимодействия с этим пакетом
-type b interface {
+type builder interface {
 	setSeats(seatsNumber int)
 	setEngine(enginePower int)
 	setTripComputer(tripComputerModel string)
@@ -9,16 +9,16 @@ type b interface {
 }
 
 type CarDirector interface {
-	SetBuilder(builder b)
+	SetBuilder(builder builder)
 	ConstructSuvCar()
 	ConstructSportsCar()
 }
 
 type carDirector struct {
-	builder b
+	builder builder
 }
 
-func (c *carDirector) SetBuilder(builder b) {
+func (c *carDirector) SetBuilder(builder builder) {
 	c.builder = builder
 }
 
