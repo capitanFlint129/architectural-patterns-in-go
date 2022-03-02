@@ -2,15 +2,25 @@ package builder
 
 import "architectural-patterns-in-go/pkg/product"
 
+type carBuilderInterface interface {
+	GetResult() product.Product
+
+	setSeats(seatsNumber int)
+	setEngine(enginePower int)
+	setTripComputer(tripComputerModel string)
+	setGps(gpsModel string)
+}
+
 type carBuilder struct {
 	seatsNumber       int
 	enginePower       int
 	tripComputerModel string
 	gpsModel          string
+	carCreator        CarCreator // functor - скрываем конструктор за параметром и не привязываемся к конкретному
 }
 
 func (c *carBuilder) GetResult() product.Product {
-	return product.NewCar(
+	return c.carCreator(
 		c.seatsNumber,
 		c.enginePower,
 		c.tripComputerModel,
@@ -34,6 +44,8 @@ func (c *carBuilder) setGps(gpsModel string) {
 	c.gpsModel = gpsModel
 }
 
-func NewCarBuilder() Builder {
-	return &carBuilder{}
+func NewCarBuilder(carCreator CarCreator) Builder {
+	return &carBuilder{
+		carCreator: carCreator,
+	}
 }

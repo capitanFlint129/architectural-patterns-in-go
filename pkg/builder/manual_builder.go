@@ -2,15 +2,25 @@ package builder
 
 import "architectural-patterns-in-go/pkg/product"
 
+type manualBuilderInterface interface {
+	GetResult() product.Product
+
+	setSeats(seatsNumber int)
+	setEngine(enginePower int)
+	setTripComputer(tripComputerModel string)
+	setGps(gpsModel string)
+}
+
 type manualBuilder struct {
 	seatsNumber       int
 	enginePower       int
 	tripComputerModel string
 	gpsModel          string
+	manualCreator     CarCreator
 }
 
 func (m *manualBuilder) GetResult() product.Product {
-	return product.NewManual(
+	return m.manualCreator(
 		m.seatsNumber,
 		m.enginePower,
 		m.tripComputerModel,
@@ -34,6 +44,8 @@ func (m *manualBuilder) setGps(gpsModel string) {
 	m.gpsModel = gpsModel
 }
 
-func NewManualBuilder() Builder {
-	return &manualBuilder{}
+func NewManualBuilder(manualCreator CarCreator) Builder {
+	return &manualBuilder{
+		manualCreator: manualCreator,
+	}
 }

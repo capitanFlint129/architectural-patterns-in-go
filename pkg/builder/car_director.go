@@ -1,6 +1,6 @@
 package builder
 
-// определяет контракт взаимодействия с этим пакетом
+// Приватный интерфейс определяет контракт взаимодействия с этим пакетом
 type builder interface {
 	setSeats(seatsNumber int)
 	setEngine(enginePower int)
@@ -10,8 +10,8 @@ type builder interface {
 
 type CarDirector interface {
 	SetBuilder(builder builder)
-	ConstructSuvCar()
-	ConstructSportsCar()
+	ConstructSuvCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string)
+	ConstructSportsCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string)
 }
 
 type carDirector struct {
@@ -22,18 +22,21 @@ func (c *carDirector) SetBuilder(builder builder) {
 	c.builder = builder
 }
 
-func (c *carDirector) ConstructSuvCar() {
-	c.builder.setSeats(6)
-	c.builder.setEngine(1000)
-	c.builder.setTripComputer("SUV car computer")
-	c.builder.setGps("Super GPS")
+// В данном случае матоды создания для разных типов автомобилей одинаковы,
+// но так как в общем случае это может быть не так,то методы разделены
+// для демонстрации паттерна
+func (c *carDirector) ConstructSuvCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) {
+	c.builder.setSeats(seatsNumber)
+	c.builder.setEngine(enginePower)
+	c.builder.setTripComputer(tripComputerModel)
+	c.builder.setGps(gpsModel)
 }
 
-func (c *carDirector) ConstructSportsCar() {
-	c.builder.setSeats(1)
-	c.builder.setEngine(700)
-	c.builder.setTripComputer("Super sports car computer")
-	c.builder.setGps("Cheap GPS")
+func (c *carDirector) ConstructSportsCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) {
+	c.builder.setSeats(seatsNumber)
+	c.builder.setEngine(enginePower)
+	c.builder.setTripComputer(tripComputerModel)
+	c.builder.setGps(gpsModel)
 }
 
 func NewCarDirector() CarDirector {

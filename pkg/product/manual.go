@@ -7,8 +7,8 @@ type Manual struct {
 	gpsModel          string
 }
 
-func NewManual(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
-	return &Manual{
+func ManualCreator(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
+	return &Car{
 		seatsNumber,
 		enginePower,
 		tripComputerModel,

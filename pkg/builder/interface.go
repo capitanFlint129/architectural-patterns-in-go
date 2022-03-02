@@ -10,3 +10,12 @@ type Builder interface {
 	setTripComputer(tripComputerModel string)
 	setGps(gpsModel string)
 }
+
+type CarParameters struct {
+	SeatsNumber       int
+	EnginePower       int
+	TripComputerModel string
+	GpsModel          string
+}
+
+type CarCreator func(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) product.Product

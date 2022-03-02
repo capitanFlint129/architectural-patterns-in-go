@@ -7,7 +7,7 @@ type Car struct {
 	gpsModel          string
 }
 
-func NewCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
+func CarCreator(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
 	return &Car{
 		seatsNumber,
 		enginePower,
