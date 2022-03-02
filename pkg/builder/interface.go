@@ -1,6 +1,6 @@
 package builder
 
-import "architectural-patterns-in-go/pkg/product"
+import "github.com/capitanFlint129/architectural-patterns-in-go/pkg/product"
 
 type Builder interface {
 	GetResult() product.Product

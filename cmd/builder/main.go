@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"architectural-patterns-in-go/pkg/builder"
-	"architectural-patterns-in-go/pkg/product"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/builder"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/product"
 )
 
 var config = builder.Config{
