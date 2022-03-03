@@ -1,2 +1,2 @@
 # Facade
-Facade pattern implementation:https://refactoring.guru/ru/design-patterns/facade
+Facade pattern implementation: https://refactoring.guru/ru/design-patterns/facade
