@@ -8,16 +8,18 @@ type builder interface {
 	SetGps(gpsModel string)
 }
 
+//CarDirector - director for cars creating
 type CarDirector interface {
 	SetBuilder(builder builder)
-	ConstructSuvCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string)
-	ConstructSportsCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string)
+	ConstructSuvCar(parameters *CarParameters)
+	ConstructSportsCar(parameters *CarParameters)
 }
 
 type carDirector struct {
 	builder builder
 }
 
+//SetBuilder sets builder for director
 func (c *carDirector) SetBuilder(builder builder) {
 	c.builder = builder
 }
@@ -25,20 +27,24 @@ func (c *carDirector) SetBuilder(builder builder) {
 // В данном случае матоды создания для разных типов автомобилей одинаковы,
 // но так как в общем случае это может быть не так,то методы разделены
 // для демонстрации паттерна
-func (c *carDirector) ConstructSuvCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) {
-	c.builder.SetSeats(seatsNumber)
-	c.builder.SetEngine(enginePower)
-	c.builder.SetTripComputer(tripComputerModel)
-	c.builder.SetGps(gpsModel)
+
+// ConstructSuvCar - manage builder to create suv car
+func (c *carDirector) ConstructSuvCar(parameters *CarParameters) {
+	c.builder.SetSeats(parameters.SeatsNumber)
+	c.builder.SetEngine(parameters.EnginePower)
+	c.builder.SetTripComputer(parameters.TripComputerModel)
+	c.builder.SetGps(parameters.GpsModel)
 }
 
-func (c *carDirector) ConstructSportsCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) {
-	c.builder.SetSeats(seatsNumber)
-	c.builder.SetEngine(enginePower)
-	c.builder.SetTripComputer(tripComputerModel)
-	c.builder.SetGps(gpsModel)
+// ConstructSportsCar - manage builder to create sport car
+func (c *carDirector) ConstructSportsCar(parameters *CarParameters) {
+	c.builder.SetSeats(parameters.SeatsNumber)
+	c.builder.SetEngine(parameters.EnginePower)
+	c.builder.SetTripComputer(parameters.TripComputerModel)
+	c.builder.SetGps(parameters.GpsModel)
 }
 
+// NewCarDirector creates CarDirector
 func NewCarDirector() CarDirector {
 	return &carDirector{}
 }

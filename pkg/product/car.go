@@ -7,6 +7,7 @@ type car struct {
 	gpsModel          string
 }
 
+// NewCar creates new car with specified parameters
 func NewCar(seatsNumber int, enginePower int, tripComputerModel string, gpsModel string) Product {
 	return &car{
 		seatsNumber:       seatsNumber,
