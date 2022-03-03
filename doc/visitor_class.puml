@@ -35,4 +35,6 @@ class steelMill implements Company
 class chemicalFactory implements Company
 class carFactory implements Company
 
+Visitor "*" --> "*" Company : visit
+
 @enduml
