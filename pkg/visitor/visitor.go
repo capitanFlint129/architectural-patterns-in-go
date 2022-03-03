@@ -4,20 +4,20 @@ import (
 	"fmt"
 )
 
-type steelMill interface {
+type steelMill = interface {
 	// Здесь пишутся методы, нужные для посещения этой комапнии
 }
 
-type chemicalFactory interface {
+type chemicalFactory = interface {
 	// Здесь пишутся методы, нужные для посещения этой комапнии
 }
 
-type carFactory interface {
+type carFactory = interface {
 	// Здесь пишутся методы, нужные для посещения этой комапнии
 }
 
 // Visitor audit different companies
-type Visitor interface {
+type Visitor = interface {
 	VisitSteelMill(steelMill steelMill)
 	VisitChemicalFactory(chemicalFactory chemicalFactory)
 	VisitCarFactory(carFactory carFactory)

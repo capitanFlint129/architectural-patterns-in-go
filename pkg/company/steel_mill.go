@@ -2,22 +2,18 @@ package company
 
 import (
 	"fmt"
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/visitor"
 )
 
-// SteelMill produces steel products
-type SteelMill interface {
-	Company
-}
+type steelMill = interface{}
 
-type steelMill struct{}
+type specificSteelMill struct{}
 
-func (s *steelMill) Accept(visitor visitor.Visitor) {
+func (s *specificSteelMill) Accept(visitor visitor) {
 	fmt.Println("Steel mill: accept visitor")
 	visitor.VisitSteelMill(s)
 }
 
 //NewSteelMill creates new steel mill
-func NewSteelMill() SteelMill {
-	return &steelMill{}
+func NewSteelMill() Company {
+	return &specificSteelMill{}
 }

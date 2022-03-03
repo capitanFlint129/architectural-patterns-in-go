@@ -1,8 +1,12 @@
 package company
 
-import "github.com/capitanFlint129/architectural-patterns-in-go/pkg/visitor"
+type visitor = interface {
+	VisitSteelMill(steelMill steelMill)
+	VisitChemicalFactory(chemicalFactory chemicalFactory)
+	VisitCarFactory(carFactory carFactory)
+}
 
 // Company produces something
 type Company interface {
-	Accept(visitor visitor.Visitor)
+	Accept(visitor visitor)
 }

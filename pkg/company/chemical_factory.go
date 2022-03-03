@@ -2,22 +2,18 @@ package company
 
 import (
 	"fmt"
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/visitor"
 )
 
-//ChemicalFactory produces chemicals
-type ChemicalFactory interface {
-	Company
-}
+type chemicalFactory = interface{}
 
-type chemicalFactory struct{}
+type specificChemicalFactory struct{}
 
-func (c *chemicalFactory) Accept(visitor visitor.Visitor) {
+func (s *specificChemicalFactory) Accept(visitor visitor) {
 	fmt.Println("Chemical factory: accept visitor")
-	visitor.VisitChemicalFactory(c)
+	visitor.VisitChemicalFactory(s)
 }
 
 //NewChemicalFactory creates new chemical factory
-func NewChemicalFactory() ChemicalFactory {
-	return &chemicalFactory{}
+func NewChemicalFactory() Company {
+	return &specificChemicalFactory{}
 }

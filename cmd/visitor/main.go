@@ -6,14 +6,12 @@ import (
 )
 
 func main() {
-	steelMill := company.NewSteelMill()
-	chemicalFactory := company.NewChemicalFactory()
-	carFactory := company.NewCarFactory()
-
-	companies := [3]company.Company{steelMill, chemicalFactory, carFactory}
-
 	auditor := visitor.NewVisitor()
-	for _, auditedCompany := range companies {
+	for _, auditedCompany := range [...]company.Company{
+		company.NewSteelMill(),
+		company.NewChemicalFactory(),
+		company.NewCarFactory(),
+	} {
 		auditedCompany.Accept(auditor)
 	}
 }

@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Visitor {
+    +VisitSteelMill(steelMill: steelMill)
+    +VisitChemicalFactory(chemicalFactory: chemicalFactory)
+    +VisitCarFactory(carFactory: carFactory)
+}
+
+class visitor {
+    +VisitSteelMill(steelMill: steelMill)
+    +VisitChemicalFactory(chemicalFactory: chemicalFactory)
+    +VisitCarFactory(carFactory: carFactory)
+}
+
+class visitor implements Visitor
+
+interface Company {
+    +Accept(visitor: Visitor)
+}
+
+class steelMill {
+    +Accept(visitor: Visitor)
+}
+
+class chemicalFactory {
+    +Accept(visitor: Visitor)
+}
+
+class carFactory {
+    +Accept(visitor: Visitor)
+}
+
+class steelMill implements Company
+class chemicalFactory implements Company
+class carFactory implements Company
+
+@enduml

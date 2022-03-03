@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant SteelMill
+participant ChemicalFactory
+participant CarFactory
+participant Visitor
+
+Client -> SteelMill: Accept(v Visitior)
+activate SteelMill
+SteelMill -> Visitor: VisitSteelMill(SteelMil)
+deactivate SteelMill
+activate Visitor
+Client <-- Visitor
+deactivate Visitor
+
+Client -> ChemicalFactory: Accept(v Visitior)
+activate ChemicalFactory
+ChemicalFactory -> Visitor: VisitChemicalFactory(ChemicalFactory)
+deactivate ChemicalFactory
+activate Visitor
+Client <-- Visitor
+deactivate Visitor
+
+Client -> CarFactory: Accept(v Visitior)
+activate CarFactory
+CarFactory -> Visitor: VisitCarFactory(CarFactory)
+deactivate CarFactory
+activate Visitor
+Client <-- Visitor
+deactivate Visitor
+@enduml
