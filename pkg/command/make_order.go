@@ -7,13 +7,13 @@ type makeOrder struct {
 	orderData  string
 }
 
-// Execute
+// Execute - sends the visitor's order
 func (m *makeOrder) Execute() {
 	fmt.Println("Command: makeOrder executes")
 	m.restaurant.CookOrder(m.orderData)
 }
 
-// NewMakeOrder
+// NewMakeOrder creates new makeOrder command
 func NewMakeOrder(restaurant restaurant, orderData string) Command {
 	return &makeOrder{
 		restaurant: restaurant,
