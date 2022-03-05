@@ -18,8 +18,17 @@ func (_m *restaurant) EXPECT() *restaurant_Expecter {
 }
 
 // CookOrder provides a mock function with given fields: orderData
-func (_m *restaurant) CookOrder(orderData string) {
-	_m.Called(orderData)
+func (_m *restaurant) CookOrder(orderData string) error {
+	ret := _m.Called(orderData)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(orderData)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // restaurant_CookOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CookOrder'
@@ -40,14 +49,23 @@ func (_c *restaurant_CookOrder_Call) Run(run func(orderData string)) *restaurant
 	return _c
 }
 
-func (_c *restaurant_CookOrder_Call) Return() *restaurant_CookOrder_Call {
-	_c.Call.Return()
+func (_c *restaurant_CookOrder_Call) Return(_a0 error) *restaurant_CookOrder_Call {
+	_c.Call.Return(_a0)
 	return _c
 }
 
 // GiveMenu provides a mock function with given fields:
-func (_m *restaurant) GiveMenu() {
-	_m.Called()
+func (_m *restaurant) GiveMenu() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // restaurant_GiveMenu_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GiveMenu'
@@ -67,8 +85,8 @@ func (_c *restaurant_GiveMenu_Call) Run(run func()) *restaurant_GiveMenu_Call {
 	return _c
 }
 
-func (_c *restaurant_GiveMenu_Call) Return() *restaurant_GiveMenu_Call {
-	_c.Call.Return()
+func (_c *restaurant_GiveMenu_Call) Return(_a0 error) *restaurant_GiveMenu_Call {
+	_c.Call.Return(_a0)
 	return _c
 }
 

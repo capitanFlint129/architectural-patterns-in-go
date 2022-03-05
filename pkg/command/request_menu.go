@@ -7,9 +7,10 @@ type requestMenu struct {
 }
 
 // Execute - requests menu for customer
-func (r *requestMenu) Execute() {
+func (r *requestMenu) Execute() error {
 	fmt.Println("Command: requestMenu executes")
-	r.restaurant.GiveMenu()
+	err := r.restaurant.GiveMenu()
+	return err
 }
 
 // NewrequestMenu creates new requestMenu command

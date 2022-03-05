@@ -1,12 +1,12 @@
 package command
 
 type restaurant interface {
-	GiveMenu()
-	CookOrder(orderData string)
+	GiveMenu() error
+	CookOrder(orderData string) error
 }
 
 // Command - some task for receiver
 type Command interface {
 	// Execute - executes command via receiver's method
-	Execute()
+	Execute() error
 }

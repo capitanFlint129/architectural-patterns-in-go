@@ -8,9 +8,10 @@ type makeOrder struct {
 }
 
 // Execute - sends the visitor's order
-func (m *makeOrder) Execute() {
+func (m *makeOrder) Execute() error {
 	fmt.Println("Command: makeOrder executes")
-	m.restaurant.CookOrder(m.orderData)
+	err := m.restaurant.CookOrder(m.orderData)
+	return err
 }
 
 // NewMakeOrder creates new makeOrder command
