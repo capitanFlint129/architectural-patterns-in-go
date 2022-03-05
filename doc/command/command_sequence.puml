@@ -1,0 +1,25 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant makeOrder
+participant requestMenu
+participant restaurant
+
+Client -> makeOrder: Execute()
+activate makeOrder
+makeOrder -> restaurant: CookOrder(orderDara)
+deactivate makeOrder
+activate restaurant
+Client <-- restaurant
+deactivate restaurant
+
+Client -> requestMenu: Execute()
+activate requestMenu
+requestMenu -> restaurant: GiveMenu()
+deactivate requestMenu
+activate restaurant
+Client <-- restaurant
+deactivate restaurant
+
+@enduml

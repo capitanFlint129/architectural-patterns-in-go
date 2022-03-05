@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Receiver {
+    + GiveMenu()
+    + CookOrder(orderData: string)
+}
+
+class restaurant {
+    + GiveMenu()
+    + CookOrder(orderData: string)
+}
+
+class restaurant implements Receiver
+
+
+interface Command {
+	+ Execute()
+}
+
+class makeOrder {
+	- restaurant: restaurant
+	- orderData: string
+	+ Execute()
+}
+
+class requestMenu {
+	- restaurant: restaurant
+	+ Execute()
+}
+
+class makeOrder implements Command
+class requestMenu implements Command
+
+Receiver "*" --> "*" Command : receives
+
+@enduml
