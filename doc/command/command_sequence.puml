@@ -2,22 +2,39 @@
 'https://plantuml.com/sequence-diagram
 
 participant Client
-participant makeOrder
+participant deliveryService
 participant requestMenu
+participant makeOrder
 participant restaurant
 
-Client -> makeOrder: Execute()
-activate makeOrder
-makeOrder -> restaurant: CookOrder(orderDara)
-deactivate makeOrder
-activate restaurant
-Client <-- restaurant
-deactivate restaurant
+activate Client
+Client -> deliveryService: RequestMenus
+deactivate Client
 
-Client -> requestMenu: Execute()
-activate requestMenu
-requestMenu -> restaurant: GiveMenu()
-deactivate requestMenu
+activate deliveryService
+loop for restaurants
+    deliveryService ->> requestMenu: Execute
+    deactivate deliveryService
+
+    activate requestMenu
+    requestMenu -> restaurant: GiveMenu(dish: string)
+    deactivate requestMenu
+    activate restaurant
+    deliveryService <-- restaurant
+    deactivate restaurant
+end
+deactivate deliveryService
+
+activate Client
+Client -> deliveryService: MakeOrder(restaurantName string, dish string)
+deactivate Client
+
+activate deliveryService
+deliveryService -> makeOrder: Execute()
+deactivate deliveryService
+activate makeOrder
+makeOrder -> restaurant: CookOrder(dish: string)
+deactivate makeOrder
 activate restaurant
 Client <-- restaurant
 deactivate restaurant
