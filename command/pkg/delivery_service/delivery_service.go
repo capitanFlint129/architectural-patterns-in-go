@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command"
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
 )
 
 type restaurant = interface {

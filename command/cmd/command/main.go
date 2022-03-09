@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/delivery_service"
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/receiver"
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/delivery_service"
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
 )
 
 var (

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/facade"
+	"github.com/capitanFlint129/architectural-patterns-in-go/facade/pkg/facade"
 )
 
 const (

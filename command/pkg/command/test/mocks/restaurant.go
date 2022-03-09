@@ -17,13 +17,13 @@ func (_m *restaurant) EXPECT() *restaurant_Expecter {
 	return &restaurant_Expecter{mock: &_m.Mock}
 }
 
-// CookOrder provides a mock function with given fields: orderData
-func (_m *restaurant) CookOrder(orderData string) error {
-	ret := _m.Called(orderData)
+// CookOrder provides a mock function with given fields: dish
+func (_m *restaurant) CookOrder(dish string) error {
+	ret := _m.Called(dish)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(orderData)
+		r0 = rf(dish)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -37,12 +37,12 @@ type restaurant_CookOrder_Call struct {
 }
 
 // CookOrder is a helper method to define mock.On call
-//  - orderData string
-func (_e *restaurant_Expecter) CookOrder(orderData interface{}) *restaurant_CookOrder_Call {
-	return &restaurant_CookOrder_Call{Call: _e.mock.On("CookOrder", orderData)}
+//  - dish string
+func (_e *restaurant_Expecter) CookOrder(dish interface{}) *restaurant_CookOrder_Call {
+	return &restaurant_CookOrder_Call{Call: _e.mock.On("CookOrder", dish)}
 }
 
-func (_c *restaurant_CookOrder_Call) Run(run func(orderData string)) *restaurant_CookOrder_Call {
+func (_c *restaurant_CookOrder_Call) Run(run func(dish string)) *restaurant_CookOrder_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(string))
 	})

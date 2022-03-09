@@ -1,4 +1,4 @@
-module github.com/capitanFlint129/architectural-patterns-in-go
+module github.com/capitanFlint129/architectural-patterns-in-go/command
 
 go 1.17
 

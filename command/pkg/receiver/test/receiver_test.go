@@ -1,10 +1,11 @@
-package receiver
+package test
 
 import (
 	"testing"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/receiver"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
 )
 
 const wrongOrderErrorFmt = "No %s \n"
@@ -22,20 +23,20 @@ var (
 )
 
 func TestMakeOrder(t *testing.T) {
-	for _, orderData := range okOrdersData {
+	for _, dish := range okOrdersData {
 		restaurant := receiver.NewRestaurant()
-		err := restaurant.CookOrder(orderData)
+		err := restaurant.CookOrder(dish)
 
 		assert.Nil(t, err)
 	}
 }
 
 func TestMakeWrongOrder(t *testing.T) {
-	for _, orderData := range wrongOrdersData {
+	for _, dish := range wrongOrdersData {
 		restaurant := receiver.NewRestaurant()
-		err := restaurant.CookOrder(orderData)
+		err := restaurant.CookOrder(dish)
 
-		assert.Errorf(t, err, wrongOrderErrorFmt, orderData)
+		assert.Errorf(t, err, wrongOrderErrorFmt, dish)
 	}
 }
 
