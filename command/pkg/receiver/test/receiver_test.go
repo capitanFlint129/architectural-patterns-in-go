@@ -1,48 +1,93 @@
 package test
 
 import (
-	"testing"
-
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"testing"
 
 	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
 )
 
-const wrongOrderErrorFmt = "No %s \n"
+type inputData struct {
+	restaurantName string
+	restaurantMenu map[string]bool
+	orderedDish    string
+}
 
-var (
-	okOrdersData = []string{
-		"Big Mac",
-	}
-	wrongOrdersData = []string{
-		"Shaurma",
-		"Pizza",
-		"Sushi",
-		"Hleb",
-	}
-)
+type expectedResult struct {
+	error error
+}
 
-func TestMakeOrder(t *testing.T) {
-	for _, dish := range okOrdersData {
-		restaurant := receiver.NewRestaurant()
-		err := restaurant.CookOrder(dish)
-
-		assert.Nil(t, err)
+func Test_MakeOrder(t *testing.T) {
+	for _, testData := range []struct {
+		testCaseName   string
+		inputData      inputData
+		expectedResult expectedResult
+	}{
+		{
+			testCaseName: "Dish in menu",
+			inputData: inputData{
+				restaurantName: "mcdonalds",
+				restaurantMenu: map[string]bool{
+					"Big Mac": true,
+				},
+				orderedDish: "Big Mac",
+			},
+			expectedResult: expectedResult{
+				error: nil,
+			},
+		},
+		{
+			testCaseName: "Dish not in menu",
+			inputData: inputData{
+				restaurantName: "mcdonalds",
+				restaurantMenu: map[string]bool{
+					"Big Mac": true,
+				},
+				orderedDish: "Shaurma",
+			},
+			expectedResult: expectedResult{
+				error: fmt.Errorf("No Shaurma \n"),
+			},
+		},
+	} {
+		t.Run(testData.testCaseName, func(t *testing.T) {
+			restaurant := receiver.NewRestaurant(testData.inputData.restaurantName, testData.inputData.restaurantMenu)
+			err := restaurant.CookOrder(testData.inputData.orderedDish)
+			if err == nil {
+				assert.ErrorIs(t, err, testData.expectedResult.error)
+			} else {
+				assert.EqualError(t, err, testData.expectedResult.error.Error())
+			}
+		})
 	}
 }
 
-func TestMakeWrongOrder(t *testing.T) {
-	for _, dish := range wrongOrdersData {
-		restaurant := receiver.NewRestaurant()
-		err := restaurant.CookOrder(dish)
-
-		assert.Errorf(t, err, wrongOrderErrorFmt, dish)
+func Test_RequestMenu(t *testing.T) {
+	for _, testData := range []struct {
+		testCaseName   string
+		inputData      inputData
+		expectedResult expectedResult
+	}{
+		{
+			testCaseName: "Restaurant gives menu",
+			inputData: inputData{
+				restaurantName: "mcdonalds",
+				restaurantMenu: map[string]bool{
+					"Big Mac": true,
+				},
+			},
+			expectedResult: expectedResult{
+				error: nil,
+			},
+		},
+	} {
+		restaurant := receiver.NewRestaurant(testData.inputData.restaurantName, testData.inputData.restaurantMenu)
+		err := restaurant.GiveMenu()
+		if err == nil {
+			assert.ErrorIs(t, err, testData.expectedResult.error)
+		} else {
+			assert.EqualError(t, err, testData.expectedResult.error.Error())
+		}
 	}
-}
-
-func TestRequestMenu(t *testing.T) {
-	restaurant := receiver.NewRestaurant()
-	err := restaurant.GiveMenu()
-
-	assert.Nil(t, err)
 }

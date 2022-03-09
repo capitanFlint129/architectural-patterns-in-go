@@ -2,9 +2,6 @@ package command
 
 import "fmt"
 
-// TODO глянуть логирование (zap, gokit, logras)
-// TODO глянуть фреймворки (gokit, fasthttp, nethttp, gorilla/mux)
-
 type makeOrder struct {
 	restaurant restaurant
 	dish       string
