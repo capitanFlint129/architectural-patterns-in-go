@@ -12,7 +12,7 @@ Client -> deliveryService: RequestMenus
 deactivate Client
 
 activate deliveryService
-loop for restaurants
+loop for deliveryService.restaurants
     deliveryService ->> requestMenu: Execute
     deactivate deliveryService
 
