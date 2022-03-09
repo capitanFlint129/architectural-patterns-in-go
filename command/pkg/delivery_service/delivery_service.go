@@ -1,7 +1,7 @@
 package delivery_service
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"sync"
 
 	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
@@ -24,7 +24,7 @@ type deliveryService struct {
 
 // RequestMenus request menus from all restaurants
 func (d *deliveryService) RequestMenus() error {
-	fmt.Println("Delivery service: RequestMenus executes")
+	logrus.Info("Delivery service: RequestMenus executes")
 
 	wg := &sync.WaitGroup{}
 	for _, restaurant := range d.restaurants {
@@ -38,13 +38,13 @@ func (d *deliveryService) RequestMenus() error {
 	}
 	wg.Wait()
 
-	fmt.Println("Delivery service: menus given")
+	logrus.Info("Delivery service: menus given")
 	return nil
 }
 
 // MakeOrder - orders the specified dish at the specified restaurant
 func (d *deliveryService) MakeOrder(restaurantName string, dish string) error {
-	fmt.Println("Delivery service: MakeOrder executes")
+	logrus.Info("Delivery service: MakeOrder executes")
 	err := d.restaurants[restaurantName].CookOrder(dish)
 	return err
 }

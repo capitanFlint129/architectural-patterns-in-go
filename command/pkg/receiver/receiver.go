@@ -3,6 +3,8 @@ package receiver
 import (
 	"fmt"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Receiver receives commands
@@ -18,15 +20,15 @@ type restaurant struct {
 
 // GiveMenu provides menu to customer
 func (r *restaurant) GiveMenu() error {
-	fmt.Printf("%s: restaurant gives menu to customer\n", r.name)
+	logrus.Infof("%s: restaurant gives menu to customer\n", r.name)
 	time.Sleep(time.Second)
-	fmt.Println("Receiver: restaurant gives menu to customer")
+	logrus.Info("Receiver: restaurant gives menu to customer")
 	return nil
 }
 
 // CookOrder cooks customers order
 func (r *restaurant) CookOrder(dish string) error {
-	fmt.Printf("Receiver: the chef prepares %s \n", dish)
+	logrus.Infof("Receiver: the chef prepares %s \n", dish)
 	if _, ok := r.menu[dish]; ok == false {
 		return fmt.Errorf("No %s \n", dish)
 	}

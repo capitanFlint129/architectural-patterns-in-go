@@ -1,6 +1,8 @@
 package command
 
-import "fmt"
+import (
+	"github.com/sirupsen/logrus"
+)
 
 type makeOrder struct {
 	restaurant restaurant
@@ -9,7 +11,7 @@ type makeOrder struct {
 
 // Execute - sends the visitor's order
 func (m *makeOrder) Execute() error {
-	fmt.Println("Command: makeOrder executes")
+	logrus.Info("Command: makeOrder executes")
 	err := m.restaurant.CookOrder(m.dish)
 	return err
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/delivery_service"
 	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
 )
@@ -40,11 +42,11 @@ func main() {
 	// Выполняем команды
 	err := yandexEda.RequestMenus()
 	if err != nil {
-		fmt.Println("Can't request menus")
+		logrus.Warning("Can't request menus")
 	}
 	fmt.Println()
 	err = yandexEda.MakeOrder(schoolCanteenName, "Сompote")
 	if err != nil {
-		fmt.Println("Can't make order")
+		logrus.Warning("Can't make order")
 	}
 }
