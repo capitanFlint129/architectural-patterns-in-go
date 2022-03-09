@@ -13,7 +13,7 @@ func (r *requestMenu) Execute() error {
 	return err
 }
 
-// NewrequestMenu creates new requestMenu command
+// NewRequestMenu creates new requestMenu command
 func NewRequestMenu(restaurant restaurant) Command {
 	return &requestMenu{restaurant: restaurant}
 }

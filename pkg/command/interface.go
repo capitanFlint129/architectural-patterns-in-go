@@ -2,7 +2,7 @@ package command
 
 type restaurant interface {
 	GiveMenu() error
-	CookOrder(orderData string) error
+	CookOrder(dish string) error
 }
 
 // Command - some task for receiver

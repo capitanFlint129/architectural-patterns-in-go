@@ -4,20 +4,20 @@ import "fmt"
 
 type makeOrder struct {
 	restaurant restaurant
-	orderData  string
+	dish       string
 }
 
 // Execute - sends the visitor's order
 func (m *makeOrder) Execute() error {
 	fmt.Println("Command: makeOrder executes")
-	err := m.restaurant.CookOrder(m.orderData)
+	err := m.restaurant.CookOrder(m.dish)
 	return err
 }
 
 // NewMakeOrder creates new makeOrder command
-func NewMakeOrder(restaurant restaurant, orderData string) Command {
+func NewMakeOrder(restaurant restaurant, dish string) Command {
 	return &makeOrder{
 		restaurant: restaurant,
-		orderData:  orderData,
+		dish:       dish,
 	}
 }
