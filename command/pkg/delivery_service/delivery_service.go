@@ -1,11 +1,14 @@
 package delivery_service
 
 import (
-	"github.com/sirupsen/logrus"
 	"sync"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
+	"github.com/sirupsen/logrus"
 )
+
+type command = interface {
+	Execute() error
+}
 
 type restaurant = interface {
 	GiveMenu() error
@@ -19,7 +22,9 @@ type DeliveryService interface {
 }
 
 type deliveryService struct {
-	restaurants map[string]restaurant
+	restaurants               map[string]restaurant
+	requestMenuCommandCreator func(restaurant restaurant) command
+	cookOrderCommandCreator   func(restaurant restaurant, dish string) command
 }
 
 // RequestMenus request menus from all restaurants
@@ -28,9 +33,9 @@ func (d *deliveryService) RequestMenus() error {
 
 	wg := &sync.WaitGroup{}
 	for _, restaurant := range d.restaurants {
-		wg.Add(1)
-		requestMenuCommand := command.NewRequestMenu(restaurant)
+		requestMenuCommand := d.requestMenuCommandCreator(restaurant)
 
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			requestMenuCommand.Execute()
@@ -45,12 +50,20 @@ func (d *deliveryService) RequestMenus() error {
 // MakeOrder - orders the specified dish at the specified restaurant
 func (d *deliveryService) MakeOrder(restaurantName string, dish string) error {
 	logrus.Info("Delivery service: MakeOrder executes")
-	makeOrderCommand := command.NewMakeOrder(d.restaurants[restaurantName], dish)
+	makeOrderCommand := d.cookOrderCommandCreator(d.restaurants[restaurantName], dish)
 	err := makeOrderCommand.Execute()
 	return err
 }
 
 // NewDeliveryService - creates new delivery service
-func NewDeliveryService(restaurantMap map[string]restaurant) DeliveryService {
-	return &deliveryService{restaurants: restaurantMap}
+func NewDeliveryService(
+	restaurantMap map[string]restaurant,
+	requestMenuCommandCreator func(restaurant restaurant) command,
+	cookOrderCommandCreator func(restaurant restaurant, dish string) command,
+) DeliveryService {
+	return &deliveryService{
+		restaurants:               restaurantMap,
+		requestMenuCommandCreator: requestMenuCommandCreator,
+		cookOrderCommandCreator:   cookOrderCommandCreator,
+	}
 }

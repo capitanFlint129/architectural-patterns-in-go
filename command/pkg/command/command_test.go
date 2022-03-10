@@ -1,13 +1,11 @@
-package test
+package command
 
 import (
 	"fmt"
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command/mocks"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command/test/mocks"
 )
 
 type inputData struct {
@@ -50,15 +48,15 @@ func Test_MakeOrder(t *testing.T) {
 	} {
 		t.Run(testData.testCaseName, func(t *testing.T) {
 			restaurantMock := mocks.NewRestaurant()
-			makeOrder := command.NewMakeOrder(restaurantMock, testData.inputData.orderedDish)
+			makeOrder := NewMakeOrder(restaurantMock, testData.inputData.orderedDish)
 			restaurantMock.On("CookOrder", testData.inputData.orderedDish).Return(testData.expectedResult.error)
 
 			err := makeOrder.Execute()
-			if err == nil {
-				assert.ErrorIs(t, err, testData.expectedResult.error)
-			} else {
-				assert.EqualError(t, err, testData.expectedResult.error.Error())
-			}
+			//if err == nil {
+			assert.ErrorIs(t, err, testData.expectedResult.error)
+			//} else {
+			//	assert.EqualError(t, err, testData.expectedResult.error.Error())
+			//}
 			restaurantMock.EXPECT().CookOrder(testData.inputData.orderedDish).Return(testData.expectedResult.error).Times(testData.expectedResult.times)
 		})
 	}
@@ -83,7 +81,7 @@ func Test_RequestMenu(t *testing.T) {
 	} {
 		t.Run(testData.testCaseName, func(t *testing.T) {
 			restaurantMock := mocks.NewRestaurant()
-			requestMenu := command.NewRequestMenu(restaurantMock)
+			requestMenu := NewRequestMenu(restaurantMock)
 			restaurantMock.On("GiveMenu").Return(testData.expectedResult.error)
 
 			err := requestMenu.Execute()

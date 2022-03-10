@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
 
 	"github.com/sirupsen/logrus"
 
@@ -33,11 +34,15 @@ func main() {
 	kfc := receiver.NewRestaurant(kfcName, kfcMenu)
 	schoolCanteen := receiver.NewRestaurant(schoolCanteenName, schoolCanteenMenu)
 
-	yandexEda := delivery_service.NewDeliveryService(map[string]receiver.Receiver{
-		mcdonaldsName:     mcdonalds,
-		kfcName:           kfc,
-		schoolCanteenName: schoolCanteen,
-	})
+	yandexEda := delivery_service.NewDeliveryService(
+		map[string]receiver.Receiver{
+			mcdonaldsName:     mcdonalds,
+			kfcName:           kfc,
+			schoolCanteenName: schoolCanteen,
+		},
+		command.NewRequestMenu,
+		command.NewMakeOrder,
+	)
 
 	// Выполняем команды
 	err := yandexEda.RequestMenus()

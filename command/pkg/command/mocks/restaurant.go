@@ -90,6 +90,7 @@ func (_c *restaurant_GiveMenu_Call) Return(_a0 error) *restaurant_GiveMenu_Call 
 	return _c
 }
 
+// Добавлять не обязательно
 func NewRestaurant() *restaurant {
 	return &restaurant{}
 }
