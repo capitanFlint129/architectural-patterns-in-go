@@ -45,7 +45,8 @@ func (d *deliveryService) RequestMenus() error {
 // MakeOrder - orders the specified dish at the specified restaurant
 func (d *deliveryService) MakeOrder(restaurantName string, dish string) error {
 	logrus.Info("Delivery service: MakeOrder executes")
-	err := d.restaurants[restaurantName].CookOrder(dish)
+	makeOrderCommand := command.NewMakeOrder(d.restaurants[restaurantName], dish)
+	err := makeOrderCommand.Execute()
 	return err
 }
 
