@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/receiver"
 )
 
 type inputData struct {

@@ -2,7 +2,7 @@ package command
 
 import (
 	"fmt"
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command/mocks"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/command/mocks"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -1,12 +1,11 @@
 package delivery_service
 
 import (
-	"sync"
-
 	"github.com/sirupsen/logrus"
+	"sync"
 )
 
-type command interface {
+type command = interface {
 	Execute() error
 }
 

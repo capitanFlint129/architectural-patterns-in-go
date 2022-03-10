@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/capitanFlint129/architectural-patterns-in-go/visitor/pkg/company"
-	"github.com/capitanFlint129/architectural-patterns-in-go/visitor/pkg/visitor"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/visitor/company"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/visitor/visitor"
 )
 
 func main() {

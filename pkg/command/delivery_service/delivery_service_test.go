@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/delivery_service/mocks"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/delivery_service/mocks"
 )
 
 type inputData struct {

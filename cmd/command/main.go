@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/command"
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/delivery_service"
-	"github.com/capitanFlint129/architectural-patterns-in-go/command/pkg/receiver"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/command"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/delivery_service"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/command/receiver"
 )
 
 var (
