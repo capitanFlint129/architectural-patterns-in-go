@@ -52,12 +52,8 @@ func Test_MakeOrder(t *testing.T) {
 			restaurantMock.On("CookOrder", testData.inputData.orderedDish).Return(testData.expectedResult.error)
 
 			err := makeOrder.Execute()
-			//if err == nil {
 			assert.ErrorIs(t, err, testData.expectedResult.error)
-			//} else {
-			//	assert.EqualError(t, err, testData.expectedResult.error.Error())
-			//}
-			restaurantMock.EXPECT().CookOrder(testData.inputData.orderedDish).Return(testData.expectedResult.error).Times(testData.expectedResult.times)
+			restaurantMock.EXPECT().CookOrder(testData.inputData.orderedDish).Return(nil).Times(testData.expectedResult.times)
 		})
 	}
 }

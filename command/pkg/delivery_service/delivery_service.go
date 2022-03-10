@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type command = interface {
+type command interface {
 	Execute() error
 }
 
@@ -14,6 +14,9 @@ type restaurant = interface {
 	GiveMenu() error
 	CookOrder(dish string) error
 }
+
+type requestMenuCommandCreator func(restaurant restaurant) command
+type cookOrderCommandCreator func(restaurant restaurant, dish string) command
 
 // DeliveryService organizes delivery from several restaurants
 type DeliveryService interface {
@@ -23,8 +26,8 @@ type DeliveryService interface {
 
 type deliveryService struct {
 	restaurants               map[string]restaurant
-	requestMenuCommandCreator func(restaurant restaurant) command
-	cookOrderCommandCreator   func(restaurant restaurant, dish string) command
+	requestMenuCommandCreator requestMenuCommandCreator
+	cookOrderCommandCreator   cookOrderCommandCreator
 }
 
 // RequestMenus request menus from all restaurants
@@ -58,8 +61,8 @@ func (d *deliveryService) MakeOrder(restaurantName string, dish string) error {
 // NewDeliveryService - creates new delivery service
 func NewDeliveryService(
 	restaurantMap map[string]restaurant,
-	requestMenuCommandCreator func(restaurant restaurant) command,
-	cookOrderCommandCreator func(restaurant restaurant, dish string) command,
+	requestMenuCommandCreator requestMenuCommandCreator,
+	cookOrderCommandCreator cookOrderCommandCreator,
 ) DeliveryService {
 	return &deliveryService{
 		restaurants:               restaurantMap,
