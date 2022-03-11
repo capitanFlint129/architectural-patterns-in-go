@@ -6,23 +6,37 @@ import (
 	"time"
 )
 
-func or(channels ...<-chan interface{}) <-chan interface{} {
+func orWithReflectSelect(channels ...<-chan interface{}) <-chan interface{} {
 	cases := make([]reflect.SelectCase, len(channels))
 	for i, channel := range channels {
 		cases[i] = reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(channel)}
 	}
 
-	multiplexed_channel := make(chan interface{})
+	multiplexedChannel := make(chan interface{})
 	go func() {
 		for {
 			_, _, is_open := reflect.Select(cases)
 			if is_open == false {
-				close(multiplexed_channel)
+				close(multiplexedChannel)
 				return
 			}
 		}
 	}()
-	return multiplexed_channel
+	return multiplexedChannel
+}
+
+func or(channels ...<-chan interface{}) <-chan interface{} {
+	multiplexedChannel := make(chan interface{})
+	for _, channel := range channels {
+		go func(channel <-chan interface{}) {
+			_, is_open := <-channel
+			if is_open == false {
+				close(multiplexedChannel)
+				return
+			}
+		}(channel)
+	}
+	return multiplexedChannel
 }
 
 func main() {
