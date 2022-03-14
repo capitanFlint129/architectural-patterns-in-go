@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/chain_of_responsibility/handler"
@@ -29,9 +28,9 @@ func main() {
 	robot := handler.NewSupportRobot(operator, robotProblemsToSolution)
 
 	dellSupport := support.NewSupport([]handler.Handler{robot, operator, engineer})
-	solution, err := dellSupport.ProcessRequest("laptop doesn't turn on", logger)
+	solution, err := dellSupport.ProcessRequest("lapop doesn't turn on", logger)
 	if err != nil {
 		logger.Errorf("Can't process request: %s", err.Error())
 	}
-	fmt.Println(solution)
+	logger.Info(solution)
 }
