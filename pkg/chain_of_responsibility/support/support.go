@@ -4,7 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type handler interface {
+type handler = interface {
 	Handle(problem string) (string, error)
 }
 

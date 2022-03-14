@@ -23,12 +23,12 @@ func main() {
 	logger := logrus.New()
 
 	// Подготовка цепочки обязанностей
-	engineer := handler.NewEngineer(engineerProblemsToSolution)
-	operator := handler.NewSupportOperator(engineer, operatorProblemsToSolution)
-	robot := handler.NewSupportRobot(operator, robotProblemsToSolution)
+	engineer := handler.NewEngineer(engineerProblemsToSolution, logger)
+	operator := handler.NewSupportOperator(engineer, operatorProblemsToSolution, logger)
+	robot := handler.NewSupportRobot(operator, robotProblemsToSolution, logger)
 
-	dellSupport := support.NewSupport([]handler.Handler{robot, operator, engineer})
-	solution, err := dellSupport.ProcessRequest("lapop doesn't turn on", logger)
+	dellSupport := support.NewSupport([]handler.Handler{robot, operator, engineer}, logger)
+	solution, err := dellSupport.ProcessRequest("laptop doesn't turn on")
 	if err != nil {
 		logger.Errorf("Can't process request: %s", err.Error())
 	}
