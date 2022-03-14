@@ -1,0 +1,46 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Handler {
+	+Handle(problem:string, logger: *logrus.Logger) (string, error)
+}
+
+class supportRobot {
+    -nextHandler         Handler
+    -problemsToSolutions map[string]string
+    +Handle(problem: string, logger: *logrus.Logger) (string, error)
+}
+
+class supportRobot implements Handler
+
+
+class supportOperator {
+    -nextHandler         Handler
+    -problemsToSolutions map[string]string
+    +Handle(problem: string, logger: *logrus.Logger) (string, error)
+}
+
+class supportOperator implements Handler
+
+
+class engineer {
+    -problemsToSolutions map[string]string
+    +Handle(problem: string, logger: *logrus.Logger) (string, error)
+}
+
+class engineer implements Handler
+
+interface Support {
+	+ProcessRequest(request: string, logger: *logrus.Logger) (string, error)
+}
+
+class support {
+    -chain []handler
+	+ProcessRequest(request: string, logger: *logrus.Logger) (string, error)
+}
+
+class support implements Support
+
+support "1" o--> "*" Handler
+
+@enduml

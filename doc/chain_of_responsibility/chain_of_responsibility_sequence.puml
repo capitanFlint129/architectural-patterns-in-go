@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant support
+participant supportRobot
+participant supportOperator
+participant engineer
+
+activate Client
+Client -> support: ProcessRequest(request: string, logger)
+deactivate Client
+
+activate support
+support -> supportRobot: Handle(request: string, logger)
+deactivate support
+
+activate supportRobot
+alt supportRobot can process request
+    supportRobot -> Client: solution
+else supportRobot can't process request
+    supportRobot -> supportOperator: Handle(request: string, logger)
+    deactivate supportRobot
+    activate supportOperator
+
+    alt supportOperator can process request
+        supportOperator -> Client: solution
+    else supportOperator can't process request
+        supportOperator -> engineer: Handle(request: string, logger)
+        deactivate supportOperator
+        activate engineer
+
+        alt engineer can process request
+            engineer -> Client: solution
+        else engineer can't process request
+            engineer -> Client: ErrorSolutionNotFound
+        end
+        deactivate engineer
+    end
+end
+
+
+@enduml
