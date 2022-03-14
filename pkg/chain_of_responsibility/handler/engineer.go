@@ -8,20 +8,22 @@ import (
 
 type engineer struct {
 	problemsToSolutions map[string]string
+	logger              *logrus.Logger
 }
 
 // Handle tries process request or transfers it to next handler
-func (e *engineer) Handle(problem string, logger *logrus.Logger) (string, error) {
+func (e *engineer) Handle(problem string) (string, error) {
 	if solution, ok := e.problemsToSolutions[problem]; ok {
-		logger.Info("Engineer processed request")
+		e.logger.Info("Engineer processed request")
 		return solution, nil
 	}
 	return "", errTypes.ErrorSolutionNotFound
 }
 
 // NewEngineer creates new engineer
-func NewEngineer(problemsToSolutions map[string]string) Handler {
+func NewEngineer(problemsToSolutions map[string]string, logger *logrus.Logger) Handler {
 	return &engineer{
 		problemsToSolutions: problemsToSolutions,
+		logger:              logger,
 	}
 }

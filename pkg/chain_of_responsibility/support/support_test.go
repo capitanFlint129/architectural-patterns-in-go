@@ -19,6 +19,12 @@ type expectedResult struct {
 	times    int
 }
 
+var (
+	correctRequestTestCaseName = "Correct request"
+
+	logger = logrus.New()
+)
+
 func Test_CookOrder(t *testing.T) {
 	for _, testData := range []struct {
 		testCaseName   string
@@ -26,7 +32,7 @@ func Test_CookOrder(t *testing.T) {
 		expectedResult expectedResult
 	}{
 		{
-			testCaseName: "Correct request",
+			testCaseName: correctRequestTestCaseName,
 			inputData: inputData{
 				request: "laptop broken",
 			},
@@ -38,17 +44,16 @@ func Test_CookOrder(t *testing.T) {
 		},
 	} {
 		t.Run(testData.testCaseName, func(t *testing.T) {
-			logger := logrus.New()
 			supportOperator := mocks.NewHandler()
-			supportOperator.On("Handle", testData.inputData.request, logger).Return(testData.expectedResult.solution, testData.expectedResult.error)
+			supportOperator.On("Handle", testData.inputData.request).Return(testData.expectedResult.solution, testData.expectedResult.error)
 			chain := []handler{supportOperator}
+			support := NewSupport(chain, logger)
 
-			support := NewSupport(chain)
-			solution, err := support.ProcessRequest(testData.inputData.request, logger)
-
+			solution, err := support.ProcessRequest(testData.inputData.request)
 			assert.Equal(t, solution, testData.expectedResult.solution)
 			assert.ErrorIs(t, err, testData.expectedResult.error)
-			supportOperator.AssertCalled(t, "Handle", testData.inputData.request, logger)
+
+			supportOperator.AssertCalled(t, "Handle", testData.inputData.request)
 			supportOperator.AssertNumberOfCalls(t, "Handle", testData.expectedResult.times)
 		})
 	}
