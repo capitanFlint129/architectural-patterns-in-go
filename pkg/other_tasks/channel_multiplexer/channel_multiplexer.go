@@ -1,9 +1,14 @@
 package channel_multiplexer
 
 import (
-	"fmt"
 	"reflect"
+	"time"
 )
+
+type ChannelDataStruct struct {
+	After time.Duration
+	Field int
+}
 
 func orWithReflectSelect(channels ...<-chan interface{}) <-chan interface{} {
 	cases := make([]reflect.SelectCase, len(channels))
@@ -24,7 +29,7 @@ func orWithReflectSelect(channels ...<-chan interface{}) <-chan interface{} {
 	return multiplexedChannel
 }
 
-func OrRecursion(channels ...<-chan interface{}) <-chan interface{} {
+func OrRecursion(channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
 	switch len(channels) {
 	case 0:
 		return nil
@@ -32,35 +37,27 @@ func OrRecursion(channels ...<-chan interface{}) <-chan interface{} {
 		return channels[0]
 	}
 
-	multiplexedChannel := make(chan interface{})
+	multiplexedChannel := make(chan ChannelDataStruct)
 	done := OrInnerRecursion(multiplexedChannel, channels...)
 
 	go func() {
-	forLoop:
-		for {
-			select {
-			case data := <-multiplexedChannel:
-				fmt.Println(data)
-			case <-done:
-				close(multiplexedChannel)
-				break forLoop
-			}
-		}
+		defer close(multiplexedChannel)
+		<-done
 	}()
 	return multiplexedChannel
 }
 
-func OrInnerRecursion(multiplexedChannel chan interface{}, channels ...<-chan interface{}) <-chan interface{} {
+func OrInnerRecursion(multiplexedChannel chan ChannelDataStruct, channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
 	if len(channels) == 1 {
 		return channels[0]
 	}
 
-	orDone := make(chan interface{})
+	orDone := make(chan ChannelDataStruct)
 	go func() {
 		defer close(orDone)
 	forLoop:
 		for {
-			var data interface{}
+			var data ChannelDataStruct
 			var ok bool
 			select {
 			case data, ok = <-channels[0]:
@@ -75,3 +72,43 @@ func OrInnerRecursion(multiplexedChannel chan interface{}, channels ...<-chan in
 	}()
 	return orDone
 }
+
+//func isClosed(ch <-chan interface{}) bool {
+//	//select {
+//	//case <-ch:
+//	//	return true
+//	//default:
+//	//}
+//	//return false
+//}
+//
+//func or(channels ...<-chan interface{}) <-chan interface{} {
+//	multiplexedChannel := make(chan interface{})
+//	done := make(chan interface{})
+//	for _, channel := range channels {
+//		go func(channel <-chan interface{}, done chan interface{}) {
+//		forLoop:
+//			for {
+//				select {
+//				case data, isOpen := <-channel:
+//					if isOpen && !isClosed(multiplexedChannel) {
+//						multiplexedChannel <- data
+//					} else {
+//						if !isClosed(done) {
+//							close(done)
+//						}
+//						if !isClosed(multiplexedChannel) {
+//							close(multiplexedChannel)
+//						}
+//					}
+//				case _, isDone := <-done:
+//					if isDone {
+//						fmt.Println("Closed")
+//						break forLoop
+//					}
+//				}
+//			}
+//		}(channel, done)
+//	}
+//	return multiplexedChannel
+//}

@@ -8,19 +8,26 @@ import (
 )
 
 func main() {
-	sig := func(after time.Duration) <-chan interface{} {
-		c := make(chan interface{})
+	sig := func(data channel_multiplexer.ChannelDataStruct) <-chan channel_multiplexer.ChannelDataStruct {
+		c := make(chan channel_multiplexer.ChannelDataStruct)
 		go func() {
 			defer close(c)
-			c <- struct{ field int }{100}
-			time.Sleep(after)
+			c <- data
+			time.Sleep(data.After)
 		}()
 		return c
 	}
 
 	start := time.Now()
 	multiplexedChannel := channel_multiplexer.OrRecursion(
-		sig(1 * time.Second),
+		sig(channel_multiplexer.ChannelDataStruct{
+			After: 1 * time.Second,
+			Field: 100,
+		}),
+		sig(channel_multiplexer.ChannelDataStruct{
+			After: 1 * time.Second,
+			Field: 100,
+		}),
 	)
 
 	for data := range multiplexedChannel {
