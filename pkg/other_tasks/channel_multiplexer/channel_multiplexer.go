@@ -1,6 +1,7 @@
 package channel_multiplexer
 
 import (
+	"context"
 	"reflect"
 	"time"
 )
@@ -11,9 +12,14 @@ type ChannelDataStruct struct {
 	Field int
 }
 
+type contextWithCancel struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+}
+
 // OrRecursion accepts an arbitrary number of channels and returns
 // one channel that returns the events any of the internal
-func OrRecursion(channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
+func OrRecursion(parent context.Context, channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
 	switch len(channels) {
 	case 0:
 		return nil
@@ -21,40 +27,50 @@ func OrRecursion(channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct 
 		return channels[0]
 	}
 
-	multiplexedChannel := make(chan ChannelDataStruct)
-	done := orInnerRecursion(multiplexedChannel, channels...)
+	ctx, cancel := context.WithCancel(parent)
+	multiplexedChannel := orInnerRecursion(&contextWithCancel{
+		ctx:    ctx,
+		cancel: cancel,
+	}, channels...)
 
 	go func() {
 		defer close(multiplexedChannel)
-		<-done
+		<-ctx.Done()
 	}()
 	return multiplexedChannel
 }
 
-func orInnerRecursion(multiplexedChannel chan ChannelDataStruct, channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
+func orInnerRecursion(
+	contextStruct *contextWithCancel,
+	channels ...<-chan ChannelDataStruct,
+) chan ChannelDataStruct {
+	var multiplexedChannel chan ChannelDataStruct
+
+	// TODO вопрос: получается слишком нагроможденно, отдельная функция будет вызывать orInnerRecursion (рекурсия станет неявной)
+	// TODO вынести if в пакет
 	if len(channels) == 1 {
-		return channels[0]
+		multiplexedChannel = make(chan ChannelDataStruct)
+	} else {
+		multiplexedChannel = orInnerRecursion(contextStruct, channels[1:]...)
 	}
 
-	orDone := make(chan ChannelDataStruct)
-	go func() {
-		defer close(orDone)
-	forLoop:
+	go func(contextStruct *contextWithCancel) {
+		defer contextStruct.cancel()
 		for {
-			var data ChannelDataStruct
-			var ok bool
 			select {
-			case data, ok = <-channels[0]:
-			case data, ok = <-channels[1]:
-			case data, ok = <-orInnerRecursion(multiplexedChannel, append(channels[2:], orDone)...):
+			case data, ok := <-channels[0]:
+				if !ok {
+					return
+				}
+				multiplexedChannel <- data
+			case _, ok := <-contextStruct.ctx.Done():
+				if !ok {
+					return
+				}
 			}
-			if !ok {
-				break forLoop
-			}
-			multiplexedChannel <- data
 		}
-	}()
-	return orDone
+	}(contextStruct)
+	return multiplexedChannel
 }
 
 func orWithReflectSelect(channels ...<-chan interface{}) <-chan interface{} {
