@@ -63,10 +63,10 @@ func Test_FinalHandler(t *testing.T) {
 	} {
 		t.Run(testData.testCaseName, func(t *testing.T) {
 			handler := testData.inputData.handlerCreator(testData.inputData.problemsToSolutions, loggerEngineer)
-			solution, err := handler.Handle(testData.inputData.request)
 
-			assert.Equal(t, solution, testData.expectedResult.solution)
+			solution, err := handler.Handle(testData.inputData.request)
 			assert.ErrorIs(t, err, testData.expectedResult.error)
+			assert.Equal(t, solution, testData.expectedResult.solution)
 		})
 	}
 }

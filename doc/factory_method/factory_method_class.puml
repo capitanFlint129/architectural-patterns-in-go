@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Product {
+	+Forward()
+	+Back()
+}
+
+class car {
+    -model: string
+    -speed: int
+    -logger: *logrus.Logger
+    +Forward()
+    +Back()
+}
+
+class car implements Product
+
+class ship {
+    -model: string
+    -speed: int
+    -logger: *logrus.Logger
+    +Forward()
+    +Back()
+}
+
+class ship implements Product
+
+interface Factory {
+	+CreateProduct(model string, speed int) Product
+}
+
+class carFactory {
+	-carCreator func(model string, speed int, logger *logrus.Logger) Product
+	-logger         *logrus.Logger
+	+CreateProduct(model string, speed int) Product
+}
+
+class shipFactory {
+	-shipCreator func(model string, speed int, logger *logrus.Logger) Product
+	-logger         *logrus.Logger
+	+CreateProduct(model string, speed int) Product
+}
+
+class carFactory implements Factory
+class shipFactory implements Factory
+
+Factory ..> Product : creates
+
+@enduml

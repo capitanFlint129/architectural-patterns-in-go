@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant carFactory
+participant shipFactory
+participant car
+participant ship
+
+activate Client
+Client -> carFactory: carFactory.CreateProduct(model, speed)
+deactivate Client
+activate carFactory
+Client <- carFactory : car
+deactivate carFactory
+activate Client
+
+Client -> car: car.Forward()
+deactivate Client
+activate car
+Client <- car
+deactivate car
+activate Client
+
+Client -> car: car.Back()
+deactivate Client
+activate car
+Client <- car
+deactivate car
+activate Client
+
+Client -> shipFactory: shipFactory.CreateProduct(model, speed)
+deactivate Client
+activate shipFactory
+Client <- shipFactory : ship
+deactivate shipFactory
+activate Client
+
+Client -> ship: ship.Forward()
+deactivate Client
+activate ship
+Client <- ship
+deactivate ship
+activate Client
+
+Client -> ship: ship.Back()
+deactivate Client
+activate ship
+Client <- ship
+deactivate ship
+activate Client
+deactivate Client
+@enduml

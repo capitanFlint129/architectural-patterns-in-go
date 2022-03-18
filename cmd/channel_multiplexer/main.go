@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -19,7 +20,9 @@ func main() {
 	}
 
 	start := time.Now()
+	ctx := context.Background()
 	multiplexedChannel := channel_multiplexer.OrRecursion(
+		ctx,
 		sig(channel_multiplexer.ChannelDataStruct{
 			After: 1 * time.Second,
 			Field: 100,
