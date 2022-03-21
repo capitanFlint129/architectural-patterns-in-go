@@ -12,14 +12,14 @@ type ChannelDataStruct struct {
 	Field int
 }
 
-type contextWithCancel struct {
-	ctx    context.Context
-	cancel context.CancelFunc
+type ContextWithCancel struct {
+	Ctx    context.Context
+	Cancel context.CancelFunc
 }
 
-// OrRecursion accepts an arbitrary number of channels and returns
+// Or accepts an arbitrary number of channels and returns
 // one channel that returns the events any of the internal
-func OrRecursion(parent context.Context, channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
+func Or(parent context.Context, multiplexedChannelCreator MultiplexedChannelCreator, channels ...<-chan ChannelDataStruct) <-chan ChannelDataStruct {
 	switch len(channels) {
 	case 0:
 		return nil
@@ -28,9 +28,9 @@ func OrRecursion(parent context.Context, channels ...<-chan ChannelDataStruct) <
 	}
 
 	ctx, cancel := context.WithCancel(parent)
-	multiplexedChannel := orInnerRecursion(&contextWithCancel{
-		ctx:    ctx,
-		cancel: cancel,
+	multiplexedChannel := multiplexedChannelCreator.GetMultiplexedChannel(&ContextWithCancel{
+		Ctx:    ctx,
+		Cancel: cancel,
 	}, channels...)
 
 	go func() {
@@ -40,22 +40,15 @@ func OrRecursion(parent context.Context, channels ...<-chan ChannelDataStruct) <
 	return multiplexedChannel
 }
 
-func orInnerRecursion(
-	contextStruct *contextWithCancel,
+func OrInner(
+	contextStruct *ContextWithCancel,
+	multiplexedChannelCreator MultiplexedChannelCreator,
 	channels ...<-chan ChannelDataStruct,
 ) chan ChannelDataStruct {
-	var multiplexedChannel chan ChannelDataStruct
+	multiplexedChannel := multiplexedChannelCreator.GetMultiplexedChannel(contextStruct, channels[1:]...)
 
-	// TODO вопрос: получается слишком нагроможденно, отдельная функция будет вызывать orInnerRecursion (рекурсия станет неявной)
-	// TODO вынести if в пакет
-	if len(channels) == 1 {
-		multiplexedChannel = make(chan ChannelDataStruct)
-	} else {
-		multiplexedChannel = orInnerRecursion(contextStruct, channels[1:]...)
-	}
-
-	go func(contextStruct *contextWithCancel) {
-		defer contextStruct.cancel()
+	go func(contextStruct *ContextWithCancel) {
+		defer contextStruct.Cancel()
 		for {
 			select {
 			case data, ok := <-channels[0]:
@@ -63,7 +56,7 @@ func orInnerRecursion(
 					return
 				}
 				multiplexedChannel <- data
-			case _, ok := <-contextStruct.ctx.Done():
+			case _, ok := <-contextStruct.Ctx.Done():
 				if !ok {
 					return
 				}

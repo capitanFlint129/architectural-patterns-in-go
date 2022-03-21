@@ -21,7 +21,6 @@ type expectedResult struct {
 var (
 	manyChannelsTestCaseName = "Many channels multiplexing"
 	oneChannelTestCaseName   = "One channel"
-	noChannelsTestCaseName   = "No channels"
 )
 
 func Test_OrRecursion(t *testing.T) {
@@ -47,6 +46,7 @@ func Test_OrRecursion(t *testing.T) {
 				channelsData: []ChannelDataStruct{
 					{After: 1, Field: 100},
 				},
+				funcForMultiplexing: sendDataThenSleepAndClose,
 			},
 		},
 	} {
@@ -56,39 +56,36 @@ func Test_OrRecursion(t *testing.T) {
 			for _, data := range testData.inputData.channelsData {
 				channels = append(channels, testData.inputData.funcForMultiplexing(data))
 			}
-			// Multiplex channels
 			ctx := context.Background()
-			multiplexedChannel := OrRecursion(ctx, channels...)
+			// Multiplex channels
+			multiplexedChannelCreator := NewMultiplexedChannelCreator(OrInner)
+			ctxWithCancel, cancel := context.WithCancel(ctx)
+			multiplexedChannel := multiplexedChannelCreator.GetMultiplexedChannel(
+				&ContextWithCancel{
+					Ctx:    ctxWithCancel,
+					Cancel: cancel,
+				},
+				channels...,
+			)
+			// Close multiplexed channel after one of channels closed
+			go func() {
+				defer close(multiplexedChannel)
+				<-ctxWithCancel.Done()
+			}()
 			// Collect data from channels through multiplexedChannel
 			dataFromMultiplexedChannel := make([]ChannelDataStruct, 0)
 			for data := range multiplexedChannel {
 				dataFromMultiplexedChannel = append(dataFromMultiplexedChannel, data)
 			}
 
-			channelsStates := make([]bool, len(channels))
+			channelsIsClosedSlice := make([]bool, 0, len(channels))
 			for _, channel := range channels {
 				_, ok := <-channel
-				channelsStates = append(channelsStates, ok)
+				channelsIsClosedSlice = append(channelsIsClosedSlice, !ok)
 			}
 
-			assert.EqualValues(t, getMapFromSlice(dataFromMultiplexedChannel), getMapFromSlice(testData.inputData.channelsData))
-			assert.True(t, all(channelsStates))
-		})
-	}
-}
-
-func Test_OrRecursionNoChannels(t *testing.T) {
-	for _, testData := range []struct {
-		testCaseName string
-	}{
-		{
-			testCaseName: noChannelsTestCaseName,
-		},
-	} {
-		t.Run(testData.testCaseName, func(t *testing.T) {
-			ctx := context.Background()
-			multiplexedChannel := OrRecursion(ctx)
-			assert.Nil(t, multiplexedChannel)
+			assert.EqualValues(t, getMapFromSlice(testData.inputData.channelsData), getMapFromSlice(dataFromMultiplexedChannel))
+			assert.True(t, all(channelsIsClosedSlice))
 		})
 	}
 }
