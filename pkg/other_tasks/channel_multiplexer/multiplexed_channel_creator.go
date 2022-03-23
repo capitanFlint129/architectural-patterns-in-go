@@ -2,9 +2,9 @@ package channel_multiplexer
 
 type channelCreatorFunc func(
 	contextStruct *ContextWithCancel,
-	multiplexedChannelCreator MultiplexedChannelCreator,
+	multiplexedChannel chan ChannelDataStruct,
 	channels ...<-chan ChannelDataStruct,
-) chan ChannelDataStruct
+)
 
 type MultiplexedChannelCreator interface {
 	GetMultiplexedChannel(
@@ -25,7 +25,8 @@ func (m *multiplexedChannelCreator) GetMultiplexedChannel(
 	if len(channels) == 0 {
 		multiplexedChannel = make(chan ChannelDataStruct)
 	} else {
-		multiplexedChannel = m.creator(contextStruct, m, channels...)
+		multiplexedChannel = m.GetMultiplexedChannel(contextStruct, channels[1:]...)
+		m.creator(contextStruct, multiplexedChannel, channels...)
 	}
 	return multiplexedChannel
 }

@@ -42,11 +42,9 @@ func Or(parent context.Context, multiplexedChannelCreator MultiplexedChannelCrea
 
 func OrInner(
 	contextStruct *ContextWithCancel,
-	multiplexedChannelCreator MultiplexedChannelCreator,
+	multiplexedChannel chan ChannelDataStruct,
 	channels ...<-chan ChannelDataStruct,
-) chan ChannelDataStruct {
-	multiplexedChannel := multiplexedChannelCreator.GetMultiplexedChannel(contextStruct, channels[1:]...)
-
+) {
 	go func(contextStruct *ContextWithCancel) {
 		defer contextStruct.Cancel()
 		for {
@@ -63,7 +61,6 @@ func OrInner(
 			}
 		}
 	}(contextStruct)
-	return multiplexedChannel
 }
 
 func orWithReflectSelect(channels ...<-chan interface{}) <-chan interface{} {
