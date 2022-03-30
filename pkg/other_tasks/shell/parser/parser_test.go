@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-/*
-Просто тест на функциональность:
-- разделяет так как надо по разделителю
-- пустая строка
-*/
-
 type inputData struct {
 	delimiter   string
 	inputString string
