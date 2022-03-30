@@ -3,7 +3,7 @@ package responder
 import (
 	"context"
 	"fmt"
-	"os"
+	"io"
 	"sync"
 )
 
@@ -12,8 +12,8 @@ type Responder interface {
 }
 
 type responder struct {
-	file         *os.File
-	errFile      *os.File
+	outputWriter io.Writer
+	errorWriter  io.Writer
 	inputChannel <-chan string
 	errorChannel <-chan error
 }
@@ -24,23 +24,23 @@ func (r *responder) StartRespond(ctx context.Context, wg *sync.WaitGroup) {
 		for {
 			select {
 			case output := <-r.inputChannel:
-				_, err := fmt.Fprintln(r.file, output)
+				_, err := fmt.Fprintln(r.outputWriter, output)
 				if err != nil {
-					fmt.Fprintln(r.errFile, err)
+					fmt.Fprintln(r.errorWriter, err)
 				}
 			case err := <-r.errorChannel:
-				fmt.Fprintln(r.errFile, err)
+				fmt.Fprintln(r.errorWriter, err)
 			case <-ctx.Done():
-				break
+				return
 			}
 		}
 	}()
 }
 
-func NewResponder(file *os.File, errFile *os.File, inputChannel <-chan string, errorChannel <-chan error) Responder {
+func NewResponder(outputWriter io.Writer, errorWriter io.Writer, inputChannel <-chan string, errorChannel <-chan error) Responder {
 	return &responder{
-		file:         file,
-		errFile:      errFile,
+		outputWriter: outputWriter,
+		errorWriter:  errorWriter,
 		inputChannel: inputChannel,
 		errorChannel: errorChannel,
 	}
