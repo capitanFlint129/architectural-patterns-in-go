@@ -10,7 +10,7 @@ import (
 )
 
 type inputData struct {
-	inputChannelData string
+	data string
 }
 
 type expectedResult struct {
@@ -30,7 +30,7 @@ func Test_Receiver(t *testing.T) {
 		{
 			testCaseName: receiveDataTestCaseName,
 			inputData: inputData{
-				inputChannelData: "line1\nline2\nline3\n",
+				data: "line1\nline2\nline3\n",
 			},
 			expectedResult: expectedResult{
 				outputChannelDataLines: []string{"line1", "line2", "line3"},
@@ -39,7 +39,7 @@ func Test_Receiver(t *testing.T) {
 	} {
 		t.Run(testData.testCaseName, func(t *testing.T) {
 			var stdin bytes.Buffer
-			stdin.Write([]byte(testData.inputData.inputChannelData))
+			stdin.Write([]byte(testData.inputData.data))
 			scanner := bufio.NewScanner(&stdin)
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
