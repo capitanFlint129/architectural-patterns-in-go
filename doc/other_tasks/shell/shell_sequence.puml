@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant shell
+participant receiver
+participant processor
+participant responder
+
+activate Client
+Client -> shell: run
+
+activate shell
+shell -> receiver: StartReceive
+activate receiver
+shell -> processor: StartProcessing
+activate processor
+shell -> responder: StartRespond
+activate responder
+deactivate shell
+
+
+par
+    loop
+        Client -> receiver: input
+        receiver -> processor: commandString
+    end
+else
+    loop
+        processor -> responder: commandOutput
+    end
+else
+    loop
+        responder -> Client: output
+    end
+end
+
+deactivate Client
+deactivate receiver
+deactivate processor
+deactivate responder
+
+@enduml

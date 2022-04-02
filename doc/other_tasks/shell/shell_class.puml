@@ -1,0 +1,161 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+' Shell
+interface Shell {
+	+Run(ctx context.Context)
+}
+
+class shell {
+    -receiver
+    -processor
+    -responder
+    +Run(ctx context.Context)
+}
+
+class shell implements Shell
+
+
+' Receiver
+interface Receiver {
+	+StartReceive(ctx context.Context, wg *sync.WaitGroup)
+}
+
+class receiver {
+	-scanner: *bufio.Scanner
+	-outputChannel: chan<- string
+	-errorChannel: chan<- error
+    +StartReceive(file *os.File, outputChannel chan<- string)
+}
+
+class receiver implements Receiver
+
+
+' Responder
+interface Responder {
+	+StartRespond(ctx context.Context, wg *sync.WaitGroup)
+}
+
+class responder {
+	-outputWriter: io.Writer
+	-errorWriter: io.Writer
+	-inputChannel: <-chan string
+	-errorChannel: <-chan error
+	+StartRespond(ctx context.Context, wg *sync.WaitGroup)
+
+}
+
+class responder implements Responder
+
+
+' Processor
+
+interface Processor {
+	+StartProcessing(ctx context.Context, wg *sync.WaitGroup)
+}
+
+class processor {
+	-pipeParser: parser
+	-commandParser: parser
+	-inputChannel: <-chan string
+	-outputChannel: chan<- string
+	-errorChannel: chan<- error
+	-commandCreatorsMap: map[string]CommandCreator
+	+StartProcessing(ctx context.Context, wg *sync.WaitGroup)
+}
+
+class processor implements Processor
+
+
+' Parser
+interface Parser  {
+	+Parse(command string) : []string
+}
+
+class parser {
+    -delimiter string
+    +Parse(command string) : []string
+}
+
+class parser implements Parser
+
+
+' Commands
+interface Command {
+    +Execute()
+}
+
+class cdCommand {
+	-args : []string
+	-inputChannel : <-chan string
+	-outputChannel : chan<- string
+	-errorChannel : chan<- error
+    +Execute()
+}
+
+class echoCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class execCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class forkCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class killCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class psCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class pwdCommand {
+    -args : []string
+    -inputChannel : <-chan string
+    -outputChannel : chan<- string
+    -errorChannel : chan<- error
+    +Execute()
+}
+
+class cdCommand implements Command
+class echoCommand implements Command
+class execCommand implements Command
+class forkCommand implements Command
+class killCommand implements Command
+class psCommand implements Command
+class pwdCommand implements Command
+
+
+
+
+shell *--> Receiver
+shell *--> Processor
+shell *--> Responder
+processor *--> Parser
+processor ---> Command : execute
+
+@enduml
