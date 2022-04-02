@@ -22,7 +22,6 @@ func (p *psCommand) Execute(wg *sync.WaitGroup) {
 		p.errorChannel <- errorTypes.ErrorTooManyArguments
 	} else {
 		processes, err := ps()
-		fmt.Printf("%d - %d", processes, err)
 		if err != nil {
 			p.errorChannel <- err
 		} else {

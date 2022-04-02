@@ -1,10 +1,8 @@
 package command
 
 import (
-	"sync"
-	"syscall"
-
 	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	"sync"
 )
 
 type forkCommand struct {
@@ -20,8 +18,8 @@ func (f *forkCommand) Execute(wg *sync.WaitGroup) {
 		f.errorChannel <- errorTypes.ErrorNotEnoughArguments
 	} else {
 		executable := f.args[0]
-		params := f.args[1:]
-		_, err := syscall.ForkExec(executable, params, nil)
+		args := f.args[1:]
+		_, err := fork(executable, args)
 		if err != nil {
 			f.errorChannel <- err
 		}

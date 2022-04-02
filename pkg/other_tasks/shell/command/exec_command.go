@@ -3,7 +3,6 @@ package command
 import (
 	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 	"sync"
-	"syscall"
 )
 
 type execCommand struct {
@@ -19,8 +18,8 @@ func (e *execCommand) Execute(wg *sync.WaitGroup) {
 		e.errorChannel <- errorTypes.ErrorNotEnoughArguments
 	} else {
 		executable := e.args[0]
-		params := e.args[1:]
-		err := syscall.Exec(executable, params, nil)
+		args := e.args[1:]
+		err := exec(executable, args)
 		if err != nil {
 			e.errorChannel <- err
 		}

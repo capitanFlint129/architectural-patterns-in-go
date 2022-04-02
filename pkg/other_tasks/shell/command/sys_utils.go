@@ -2,6 +2,7 @@ package command
 
 import (
 	"os"
+	"syscall"
 
 	gp_ps "github.com/mitchellh/go-ps"
 )
@@ -32,4 +33,16 @@ var ps = func() ([]process, error) {
 		}
 	}
 	return resultProcesses, nil
+}
+
+var kill = func(pid int) error {
+	return syscall.Kill(pid, syscall.SIGKILL)
+}
+
+var fork = func(executable string, args []string) (int, error) {
+	return syscall.ForkExec(executable, args, nil)
+}
+
+var exec = func(executable string, args []string) error {
+	return syscall.Exec(executable, args, nil)
 }

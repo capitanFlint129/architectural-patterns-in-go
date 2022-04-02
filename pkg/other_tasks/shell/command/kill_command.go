@@ -1,11 +1,9 @@
 package command
 
 import (
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 	"strconv"
 	"sync"
-	"syscall"
-
-	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 )
 
 type killCommand struct {
@@ -25,7 +23,7 @@ func (k *killCommand) Execute(wg *sync.WaitGroup) {
 		if err != nil {
 			k.errorChannel <- err
 		} else {
-			err = syscall.Kill(pid, syscall.SIGKILL)
+			err = kill(pid)
 			if err != nil {
 				k.errorChannel <- err
 			}
