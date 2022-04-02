@@ -9,6 +9,10 @@ import (
 	"testing"
 )
 
+const (
+	receiveDataTestCaseName = "Receive data"
+)
+
 type inputData struct {
 	data string
 }
@@ -16,10 +20,6 @@ type inputData struct {
 type expectedResult struct {
 	outputChannelDataLines []string
 }
-
-const (
-	receiveDataTestCaseName = "Receive data"
-)
 
 func Test_Receiver(t *testing.T) {
 	for _, testData := range []struct {
@@ -51,7 +51,7 @@ func Test_Receiver(t *testing.T) {
 			wg.Add(1)
 			receiver.StartReceive(ctx, &wg)
 			outputChannelLines := make([]string, len(testData.expectedResult.outputChannelDataLines))
-			for i := 0; i < len(testData.expectedResult.outputChannelDataLines); i++ {
+			for i := range testData.expectedResult.outputChannelDataLines {
 				outputChannelLines[i] = <-outputChannel
 			}
 			cancel()

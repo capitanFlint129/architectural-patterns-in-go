@@ -9,6 +9,10 @@ import (
 	"testing"
 )
 
+const (
+	respondTestCaseName = "Respond"
+)
+
 type inputData struct {
 	inputChannelData []string
 	errorChannelData []string
@@ -18,10 +22,6 @@ type expectedResult struct {
 	outputData string
 	errorData  string
 }
-
-const (
-	respondTestCaseName = "Respond"
-)
 
 func Test_Responder(t *testing.T) {
 	for _, testData := range []struct {
