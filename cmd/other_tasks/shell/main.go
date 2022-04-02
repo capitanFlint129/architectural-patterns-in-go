@@ -3,27 +3,28 @@ package main
 import (
 	"bufio"
 	"context"
+	"os"
+	"time"
+
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/command"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/parser"
 	processor "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/processor"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/reciever"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/responder"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/shell"
-	"os"
-	"time"
 )
-
-// TODO сделать тесты
-// TODO написать комменты к публичным вещам
-// TODO написать схемы
-// TODO написать ридми
 
 const (
 	pipeDelimiter    = "|"
 	commandDelimiter = " "
 )
 
-var commandsCreatorsMap = map[string]processor.CommandCreator{
+var commandsCreatorsMap = map[string]func(
+	args []string,
+	inputChannel <-chan string,
+	outputChannel chan<- string,
+	errorChannel chan<- error,
+) command.Command{
 	"cd":   command.NewCdCommand,
 	"pwd":  command.NewPwdCommand,
 	"echo": command.NewEchoCommand,
