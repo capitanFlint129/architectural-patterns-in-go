@@ -3,19 +3,21 @@ package parser
 import "strings"
 
 type Parser interface {
-	Parse(pipeCommand string) []string
+	Parse(command string) []string
 }
 
 type parser struct {
 	delimiter string
 }
 
-func (p *parser) Parse(pipeCommand string) []string {
-	pipeCommand = strings.TrimSuffix(pipeCommand, "\n")
-	if pipeCommand == "" {
+func (p *parser) Parse(command string) []string {
+	if command == "" {
 		return make([]string, 0)
 	}
-	commands := strings.Split(pipeCommand, p.delimiter)
+	commands := strings.Split(command, p.delimiter)
+	for i := range commands {
+		commands[i] = strings.TrimSpace(commands[i])
+	}
 	return commands
 }
 
