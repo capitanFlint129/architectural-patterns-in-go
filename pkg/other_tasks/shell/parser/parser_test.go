@@ -5,6 +5,14 @@ import (
 	"testing"
 )
 
+const (
+	parseStringTestCaseName                 = "Parse string"
+	parseStringWithoutNewLineTestCaseName   = "Parse string without new line on end"
+	parseEmptyStringTestCaseName            = "Parse empty string"
+	parseStringWithoutDelimiterTestCaseName = "Parse string without delimiter"
+	parseTrimWhitespacesTestCaseName        = "Parse string with whitespaces"
+)
+
 type inputData struct {
 	delimiter   string
 	inputString string
@@ -13,13 +21,6 @@ type inputData struct {
 type expectedResult struct {
 	parsedString []string
 }
-
-const (
-	parseStringTestCaseName                 = "Parse string"
-	parseStringWithoutNewLineTestCaseName   = "Parse string without new line on end"
-	parseEmptyStringTestCaseName            = "Parse empty string"
-	parseStringWithoutDelimiterTestCaseName = "Parse string without delimiter"
-)
 
 func Test_Parser(t *testing.T) {
 	for _, testData := range []struct {
@@ -34,7 +35,7 @@ func Test_Parser(t *testing.T) {
 				inputString: "cmd_1 | cmd_2\n",
 			},
 			expectedResult: expectedResult{
-				parsedString: []string{"cmd_1 ", " cmd_2"},
+				parsedString: []string{"cmd_1", "cmd_2"},
 			},
 		},
 		{
@@ -44,7 +45,7 @@ func Test_Parser(t *testing.T) {
 				inputString: "cmd_1 | cmd_2",
 			},
 			expectedResult: expectedResult{
-				parsedString: []string{"cmd_1 ", " cmd_2"},
+				parsedString: []string{"cmd_1", "cmd_2"},
 			},
 		},
 		{
@@ -62,6 +63,16 @@ func Test_Parser(t *testing.T) {
 			inputData: inputData{
 				delimiter:   "|",
 				inputString: "cmd_1\n",
+			},
+			expectedResult: expectedResult{
+				parsedString: []string{"cmd_1"},
+			},
+		},
+		{
+			testCaseName: parseTrimWhitespacesTestCaseName,
+			inputData: inputData{
+				delimiter:   "|",
+				inputString: "  \t cmd_1   \n",
 			},
 			expectedResult: expectedResult{
 				parsedString: []string{"cmd_1"},
