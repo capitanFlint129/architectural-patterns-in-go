@@ -2,24 +2,26 @@ package command
 
 import (
 	"strconv"
+	"sync"
 	"syscall"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 )
 
 type killCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (k *killCommand) Execute() {
-	switch len(k.command) {
+func (k *killCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	switch len(k.args) {
+	case 0:
+		k.errorChannel <- errorTypes.ErrorNotEnoughArguments
 	case 1:
-		k.errorChannel <- errors.ErrorNotEnoughArguments
-	case 2:
-		pid, err := strconv.Atoi(k.command[1])
+		pid, err := strconv.Atoi(k.args[0])
 		if err != nil {
 			k.errorChannel <- err
 		} else {
@@ -29,19 +31,19 @@ func (k *killCommand) Execute() {
 			}
 		}
 	default:
-		k.errorChannel <- errors.ErrorTooManyArguments
+		k.errorChannel <- errorTypes.ErrorTooManyArguments
 
 	}
 }
 
 func NewKillCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &killCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

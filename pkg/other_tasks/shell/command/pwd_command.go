@@ -1,30 +1,34 @@
 package command
 
-import "os"
+import (
+	"sync"
+)
 
 type pwdCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (p *pwdCommand) Execute() {
-	path, err := os.Getwd()
+func (p *pwdCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	wd, err := getwd()
 	if err != nil {
 		p.errorChannel <- err
+	} else {
+		p.outputChannel <- wd
 	}
-	p.outputChannel <- path
 }
 
 func NewPwdCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &pwdCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

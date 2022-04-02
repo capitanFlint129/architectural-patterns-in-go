@@ -2,40 +2,45 @@ package command
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-ps"
+	"sync"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 )
 
+const processFormat = "%d - %s"
+
 type psCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (p *psCommand) Execute() {
-	if len(p.command) > 1 {
-		p.errorChannel <- errors.ErrorTooManyArguments
+func (p *psCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	if len(p.args) > 0 {
+		p.errorChannel <- errorTypes.ErrorTooManyArguments
 	} else {
-		processes, err := ps.Processes()
+		processes, err := ps()
+		fmt.Printf("%d - %d", processes, err)
 		if err != nil {
 			p.errorChannel <- err
-		}
-		for _, process := range processes {
-			p.outputChannel <- fmt.Sprintf("%d - %s", process.Pid(), process.Executable())
+		} else {
+			for _, process := range processes {
+				p.outputChannel <- fmt.Sprintf(processFormat, process.pid, process.executable)
+			}
 		}
 	}
 }
 
 func NewPsCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &psCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

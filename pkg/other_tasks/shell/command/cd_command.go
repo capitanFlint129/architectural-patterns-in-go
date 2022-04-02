@@ -1,25 +1,27 @@
 package command
 
 import (
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
-	"os"
+	"sync"
+
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 )
 
 type cdCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (c *cdCommand) Execute() {
+func (c *cdCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
 	var err error
-	switch len(c.command) {
+	switch len(c.args) {
+	case 0:
 	case 1:
-	case 2:
-		err = os.Chdir(c.command[1])
+		err = chdir(c.args[0])
 	default:
-		err = errors.ErrorTooManyArguments
+		err = errorTypes.ErrorTooManyArguments
 	}
 	if err != nil {
 		c.errorChannel <- err
@@ -27,13 +29,13 @@ func (c *cdCommand) Execute() {
 }
 
 func NewCdCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &cdCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

@@ -1,5 +1,7 @@
 package command
 
+import "sync"
+
 type Command = interface {
-	Execute()
+	Execute(wg *sync.WaitGroup)
 }

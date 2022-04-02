@@ -1,26 +1,30 @@
 package command
 
-import "strings"
+import (
+	"strings"
+	"sync"
+)
 
 type echoCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (e *echoCommand) Execute() {
-	e.outputChannel <- strings.Join(e.command[1:], " ")
+func (e *echoCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	e.outputChannel <- strings.Join(e.args, " ")
 }
 
 func NewEchoCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &echoCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

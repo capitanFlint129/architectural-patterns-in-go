@@ -1,23 +1,25 @@
 package command
 
 import (
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	"sync"
 	"syscall"
 )
 
 type execCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (e *execCommand) Execute() {
-	if len(e.command) == 0 {
-		e.errorChannel <- errors.ErrorNotEnoughArguments
+func (e *execCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	if len(e.args) == 0 {
+		e.errorChannel <- errorTypes.ErrorNotEnoughArguments
 	} else {
-		executable := e.command[1]
-		params := e.command[2:]
+		executable := e.args[0]
+		params := e.args[1:]
 		err := syscall.Exec(executable, params, nil)
 		if err != nil {
 			e.errorChannel <- err
@@ -27,13 +29,13 @@ func (e *execCommand) Execute() {
 }
 
 func NewExecCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &execCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

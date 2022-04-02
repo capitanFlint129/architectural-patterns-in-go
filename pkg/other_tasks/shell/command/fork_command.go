@@ -1,24 +1,26 @@
 package command
 
 import (
+	"sync"
 	"syscall"
 
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 )
 
 type forkCommand struct {
-	command       []string
+	args          []string
 	inputChannel  <-chan string
 	outputChannel chan<- string
 	errorChannel  chan<- error
 }
 
-func (f *forkCommand) Execute() {
-	if len(f.command) == 0 {
-		f.errorChannel <- errors.ErrorNotEnoughArguments
+func (f *forkCommand) Execute(wg *sync.WaitGroup) {
+	defer wg.Done()
+	if len(f.args) == 0 {
+		f.errorChannel <- errorTypes.ErrorNotEnoughArguments
 	} else {
-		executable := f.command[1]
-		params := f.command[2:]
+		executable := f.args[0]
+		params := f.args[1:]
 		_, err := syscall.ForkExec(executable, params, nil)
 		if err != nil {
 			f.errorChannel <- err
@@ -27,13 +29,13 @@ func (f *forkCommand) Execute() {
 }
 
 func NewForkCommand(
-	command []string,
+	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &forkCommand{
-		command:       command,
+		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,
