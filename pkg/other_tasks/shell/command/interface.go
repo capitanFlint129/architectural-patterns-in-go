@@ -1,7 +1,13 @@
 package command
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
+// Command for shell
 type Command = interface {
-	Execute(wg *sync.WaitGroup)
+	// Execute - executes command
+	Execute(ctx context.Context, wg *sync.WaitGroup)
+	SetArgs(args []string) error
 }
