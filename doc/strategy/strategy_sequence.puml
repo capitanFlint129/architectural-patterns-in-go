@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant pdfConverter
+participant docxStrategy
+participant pptxStrategy
+participant jpgStrategy
+
+activate Client
+
+Client -> pdfConverter: SetStrategy(docxStrategy)
+activate pdfConverter
+Client <- pdfConverter
+deactivate pdfConverter
+
+Client -> pdfConverter: Convert(file: *os.File)
+activate pdfConverter
+pdfConverter -> docxStrategy
+deactivate pdfConverter
+activate docxStrategy
+Client <- docxStrategy
+deactivate docxStrategy
+
+
+Client -> pdfConverter: SetStrategy(pptxStrategy)
+activate pdfConverter
+Client <- pdfConverter
+deactivate pdfConverter
+
+Client -> pdfConverter: Convert(file: *os.File)
+activate pdfConverter
+pdfConverter -> pptxStrategy
+deactivate pdfConverter
+activate pptxStrategy
+Client <- pptxStrategy
+deactivate pptxStrategy
+
+
+Client -> pdfConverter: SetStrategy(jpgStrategy)
+activate pdfConverter
+Client <- pdfConverter
+deactivate pdfConverter
+
+Client -> pdfConverter: Convert(file: *os.File)
+activate pdfConverter
+pdfConverter -> jpgStrategy
+deactivate pdfConverter
+activate jpgStrategy
+Client <- jpgStrategy
+deactivate jpgStrategy
+
+
+deactivate Client
+
+@enduml

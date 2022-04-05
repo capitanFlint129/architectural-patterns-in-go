@@ -1,0 +1,40 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface PdfConverter {
+	+SetStrategy(strategy: Strategy)
+	+Convert(file: *os.File)
+}
+
+class pdfConverter {
+    -strategy: Strategy
+    +SetStrategy(strategy: Strategy)
+    +Convert(file: *os.File)
+}
+
+class pdfConverter implements PdfConverter
+
+interface Strategy {
+    +Convert(file: *os.File)
+}
+
+class docxStrategy {
+    +Convert(file: *os.File)
+}
+
+class pptxStrategy {
+    +Convert(file: *os.File)
+}
+
+class jpgStrategy {
+    +Convert(file: *os.File)
+}
+
+class docxStrategy implements Strategy
+class pptxStrategy implements Strategy
+class jpgStrategy implements Strategy
+
+pdfConverter o--> Strategy
+
+@enduml
