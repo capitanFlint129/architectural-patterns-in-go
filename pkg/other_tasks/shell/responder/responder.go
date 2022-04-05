@@ -24,8 +24,7 @@ func (r *responder) StartRespond(ctx context.Context, wg *sync.WaitGroup) {
 		for {
 			select {
 			case output := <-r.inputChannel:
-				_, err := fmt.Fprintln(r.outputWriter, output)
-				if err != nil {
+				if _, err := fmt.Fprintln(r.outputWriter, output); err != nil {
 					fmt.Fprintln(r.errorWriter, err)
 				}
 			case err := <-r.errorChannel:
