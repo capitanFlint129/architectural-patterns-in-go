@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Ticket {
+    +SetState(state: State)
+	+Publish()
+	+Complete()
+	+Delete()
+}
+
+class ticket {
+    - state: State
+    +SetState(state: State)
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class ticket implements Ticket
+
+interface State {
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class draft {
+    - ticket: Ticket
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class draft implements State
+
+class ready {
+    - ticket: Ticket
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class ready implements State
+
+class inProgress {
+    - ticket: Ticket
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class inProgress implements State
+
+class done {
+    - ticket: Ticket
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class done implements State
+
+class deleted {
+    - ticket: Ticket
+    +Publish()
+    +Complete()
+    +Delete()
+}
+
+class deleted implements State
+
+
+ticket o--> State
+done --> ticket
+deleted --> ticket
+inProgress --> ticket
+draft --> ticket
+ready --> ticket
+
+@enduml
+
+

@@ -1,0 +1,64 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant Client
+participant ticket
+participant draft
+participant ready
+participant inProgress
+participant done
+participant deleted
+
+activate Client
+
+Client -> ticket: Publish
+activate ticket
+ticket -> draft: Publish
+deactivate ticket
+
+activate draft
+draft -> Client
+deactivate draft
+
+Client -> ticket: Complete
+activate ticket
+ticket -> ready: Complete
+deactivate ticket
+
+activate ready
+ready -> Client
+deactivate ready
+
+Client -> ticket: Complete
+activate ticket
+ticket -> inProgress: Complete
+deactivate ticket
+
+activate inProgress
+inProgress -> Client
+deactivate inProgress
+
+Client -> ticket: Complete
+activate ticket
+ticket -> done: Complete
+deactivate ticket
+
+activate done
+done -> Client
+deactivate done
+
+
+
+Client -> ticket: Delete
+activate ticket
+ticket -> deleted: Delete
+deactivate ticket
+
+activate deleted
+deleted -> Client
+deactivate deleted
+
+
+deactivate Client
+
+@enduml
