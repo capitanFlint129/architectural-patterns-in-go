@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
 	"sync"
@@ -23,6 +24,7 @@ type execCommandInputData struct {
 }
 
 type execCommandExpectedResult struct {
+	setArgsError      error
 	executableInExec  string
 	argsInExec        []string
 	execNumberOfCalls int
@@ -43,7 +45,7 @@ func Test_ExecCommand(t *testing.T) {
 			},
 			expectedResult: execCommandExpectedResult{
 				executableInExec:  "executable",
-				argsInExec:        []string{"arg0", "arg1"},
+				argsInExec:        []string{"arg1", "arg2"},
 				execNumberOfCalls: 1,
 				errorChannelError: nil,
 			},
@@ -56,20 +58,9 @@ func Test_ExecCommand(t *testing.T) {
 			},
 			expectedResult: execCommandExpectedResult{
 				executableInExec:  "executable",
-				argsInExec:        []string{"arg0", "arg1"},
+				argsInExec:        []string{"arg1", "arg2"},
 				execNumberOfCalls: 1,
 				errorChannelError: execError,
-			},
-		},
-		{
-			testCaseName: execCommandNotEnoughArgumentsErrorTestCaseName,
-			inputData: execCommandInputData{
-				args:      []string{},
-				execError: execError,
-			},
-			expectedResult: execCommandExpectedResult{
-				execNumberOfCalls: 0,
-				errorChannelError: errorTypes.ErrorNotEnoughArguments,
 			},
 		},
 		{
@@ -79,8 +70,8 @@ func Test_ExecCommand(t *testing.T) {
 				execError: nil,
 			},
 			expectedResult: execCommandExpectedResult{
+				setArgsError:      errorTypes.ErrorNotEnoughArguments,
 				execNumberOfCalls: 0,
-				errorChannelError: errorTypes.ErrorTooManyArguments,
 			},
 		},
 	} {
@@ -88,35 +79,39 @@ func Test_ExecCommand(t *testing.T) {
 			inputChannel := make(chan string)
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
-
 			execCommand := NewExecCommand(
-				testData.inputData.args,
 				inputChannel,
 				outputChannel,
 				errorChannel,
 			)
+			err := execCommand.SetArgs(testData.inputData.args)
+			if testData.expectedResult.setArgsError != nil {
+				assert.ErrorIs(t, err, testData.expectedResult.setArgsError)
+			} else {
+				originalExec := exec
+				execNumberOfCalls := 0
+				exec = func(executable string, args []string) error {
+					execNumberOfCalls++
+					assert.Equal(t, testData.expectedResult.executableInExec, executable)
+					assert.Equal(t, testData.expectedResult.argsInExec, args)
+					return testData.inputData.execError
+				}
 
-			originalExec := exec
-			execNumberOfCalls := 0
-			exec = func(executable string, args []string) error {
-				execNumberOfCalls++
-				assert.Equal(t, testData.expectedResult.executableInExec, executable)
-				assert.Equal(t, testData.expectedResult.argsInExec, args)
-				return testData.inputData.execError
+				mainCtx := context.Background()
+				ctx, _ := context.WithCancel(mainCtx)
+				var wg sync.WaitGroup
+				wg.Add(1)
+				go execCommand.Execute(ctx, &wg)
+				var resultError error
+				if testData.expectedResult.errorChannelError != nil {
+					resultError = <-errorChannel
+				}
+				wg.Wait()
+				exec = originalExec
+
+				assert.Equal(t, testData.expectedResult.errorChannelError, resultError)
+				assert.Equal(t, testData.expectedResult.execNumberOfCalls, execNumberOfCalls)
 			}
-
-			var wg sync.WaitGroup
-			wg.Add(1)
-			go execCommand.Execute(&wg)
-			var resultError error
-			if testData.expectedResult.errorChannelError != nil {
-				resultError = <-errorChannel
-			}
-			wg.Wait()
-			exec = originalExec
-
-			assert.Equal(t, testData.expectedResult.errorChannelError, resultError)
-			assert.Equal(t, testData.expectedResult.execNumberOfCalls, execNumberOfCalls)
 		})
 	}
 }

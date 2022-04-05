@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"testing"
@@ -26,6 +27,7 @@ type cdCommandInputData struct {
 }
 
 type cdCommandExpectedResult struct {
+	setArgsError       error
 	chdirNumberOfCalls int
 	errorChannelError  error
 }
@@ -55,7 +57,6 @@ func Test_CdCommand(t *testing.T) {
 			},
 			expectedResult: cdCommandExpectedResult{
 				chdirNumberOfCalls: 0,
-				errorChannelError:  nil,
 			},
 		},
 		{
@@ -65,8 +66,8 @@ func Test_CdCommand(t *testing.T) {
 				pathInChdirFunc: "new_working_directory",
 			},
 			expectedResult: cdCommandExpectedResult{
+				setArgsError:       errorTypes.ErrorTooManyArguments,
 				chdirNumberOfCalls: 0,
-				errorChannelError:  errorTypes.ErrorTooManyArguments,
 			},
 		},
 		{
@@ -87,11 +88,14 @@ func Test_CdCommand(t *testing.T) {
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
 			cdCommand := NewCdCommand(
-				testData.inputData.args,
 				inputChannel,
 				outputChannel,
 				errorChannel,
 			)
+			err := cdCommand.SetArgs(testData.inputData.args)
+			if testData.expectedResult.setArgsError != nil {
+				assert.ErrorIs(t, err, testData.expectedResult.setArgsError)
+			}
 
 			originalChdir := chdir
 			chdirCallsNumber := 0
@@ -101,9 +105,11 @@ func Test_CdCommand(t *testing.T) {
 				return testData.inputData.chdirError
 			}
 
+			mainCtx := context.Background()
+			ctx, _ := context.WithCancel(mainCtx)
 			var wg sync.WaitGroup
 			wg.Add(1)
-			go cdCommand.Execute(&wg)
+			go cdCommand.Execute(ctx, &wg)
 			var resultError error
 			if testData.expectedResult.errorChannelError != nil {
 				resultError = <-errorChannel

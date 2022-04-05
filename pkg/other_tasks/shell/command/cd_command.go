@@ -1,9 +1,9 @@
 package command
 
 import (
-	"sync"
-
+	"context"
 	errorTypes "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/shell/errors"
+	"sync"
 )
 
 type cdCommand struct {
@@ -13,29 +13,30 @@ type cdCommand struct {
 	errorChannel  chan<- error
 }
 
-func (c *cdCommand) Execute(wg *sync.WaitGroup) {
+func (c *cdCommand) Execute(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	var err error
-	switch len(c.args) {
-	case 0:
-	case 1:
-		err = chdir(c.args[0])
-	default:
-		err = errorTypes.ErrorTooManyArguments
+	if len(c.args) == 0 {
+		return
 	}
-	if err != nil {
+	if err := chdir(c.args[0]); err != nil {
 		c.errorChannel <- err
 	}
 }
 
+func (c *cdCommand) SetArgs(args []string) error {
+	if len(args) > 1 {
+		return errorTypes.ErrorTooManyArguments
+	}
+	c.args = args
+	return nil
+}
+
 func NewCdCommand(
-	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &cdCommand{
-		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

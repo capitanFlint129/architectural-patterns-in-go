@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"testing"
@@ -64,13 +65,12 @@ func Test_PwdCommand(t *testing.T) {
 			inputChannel := make(chan string)
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
-
 			pwdCommand := NewPwdCommand(
-				testData.inputData.args,
 				inputChannel,
 				outputChannel,
 				errorChannel,
 			)
+			_ = pwdCommand.SetArgs(testData.inputData.args)
 
 			originalGetwd := getwd
 			getwdNumberOfCalls := 0
@@ -79,9 +79,11 @@ func Test_PwdCommand(t *testing.T) {
 				return testData.inputData.returnedWorkingDir, testData.inputData.getwdError
 			}
 
+			mainCtx := context.Background()
+			ctx, _ := context.WithCancel(mainCtx)
 			var wg sync.WaitGroup
 			wg.Add(1)
-			go pwdCommand.Execute(&wg)
+			go pwdCommand.Execute(ctx, &wg)
 			var resultData string
 			var resultError error
 			select {

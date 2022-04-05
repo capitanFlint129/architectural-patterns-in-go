@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"sync"
 	"testing"
 
@@ -49,17 +50,18 @@ func Test_EchoCommand(t *testing.T) {
 			inputChannel := make(chan string)
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
-
 			echoCommand := NewEchoCommand(
-				testData.inputData.args,
 				inputChannel,
 				outputChannel,
 				errorChannel,
 			)
+			echoCommand.SetArgs(testData.inputData.args)
 
+			mainCtx := context.Background()
+			ctx, _ := context.WithCancel(mainCtx)
 			var wg sync.WaitGroup
 			wg.Add(1)
-			go echoCommand.Execute(&wg)
+			go echoCommand.Execute(ctx, &wg)
 			result := <-outputChannel
 			wg.Wait()
 

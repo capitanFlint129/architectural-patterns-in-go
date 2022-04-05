@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -16,30 +17,32 @@ type psCommand struct {
 	errorChannel  chan<- error
 }
 
-func (p *psCommand) Execute(wg *sync.WaitGroup) {
+func (p *psCommand) Execute(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	if len(p.args) > 0 {
-		p.errorChannel <- errorTypes.ErrorTooManyArguments
-	} else {
-		processes, err := ps()
-		if err != nil {
-			p.errorChannel <- err
-		} else {
-			for _, process := range processes {
-				p.outputChannel <- fmt.Sprintf(processFormat, process.pid, process.executable)
-			}
-		}
+	processes, err := ps()
+	if err != nil {
+		p.errorChannel <- err
+		return
+	}
+	for _, process := range processes {
+		p.outputChannel <- fmt.Sprintf(processFormat, process.pid, process.executable)
 	}
 }
 
+func (p *psCommand) SetArgs(args []string) error {
+	if len(args) > 0 {
+		return errorTypes.ErrorTooManyArguments
+	}
+	p.args = args
+	return nil
+}
+
 func NewPsCommand(
-	args []string,
 	inputChannel <-chan string,
 	outputChannel chan<- string,
 	errorChannel chan<- error,
 ) Command {
 	return &psCommand{
-		args:          args,
 		inputChannel:  inputChannel,
 		outputChannel: outputChannel,
 		errorChannel:  errorChannel,

@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"errors"
 	"sync"
 	"testing"
@@ -25,6 +26,7 @@ type psCommandInputData struct {
 }
 
 type psCommandExpectedResult struct {
+	setArgsError      error
 	outputChannelData []string
 	psNumberOfCalls   int
 	errorChannelError error
@@ -78,7 +80,7 @@ func Test_PsCommand(t *testing.T) {
 			expectedResult: psCommandExpectedResult{
 				outputChannelData: []string{},
 				psNumberOfCalls:   0,
-				errorChannelError: errorTypes.ErrorTooManyArguments,
+				setArgsError:      errorTypes.ErrorTooManyArguments,
 			},
 		},
 	} {
@@ -87,36 +89,41 @@ func Test_PsCommand(t *testing.T) {
 			outputChannel := make(chan string)
 			errorChannel := make(chan error)
 			psCommand := NewPsCommand(
-				testData.inputData.args,
 				inputChannel,
 				outputChannel,
 				errorChannel,
 			)
+			err := psCommand.SetArgs(testData.inputData.args)
+			if testData.expectedResult.setArgsError != nil {
+				assert.ErrorIs(t, err, testData.expectedResult.setArgsError)
+			} else {
+				originalPs := ps
+				psCallsNumber := 0
+				ps = func() ([]process, error) {
+					psCallsNumber++
+					return testData.inputData.processes, testData.inputData.psError
+				}
 
-			originalPs := ps
-			psCallsNumber := 0
-			ps = func() ([]process, error) {
-				psCallsNumber++
-				return testData.inputData.processes, testData.inputData.psError
-			}
+				mainCtx := context.Background()
+				ctx, _ := context.WithCancel(mainCtx)
+				var wg sync.WaitGroup
+				wg.Add(1)
+				go psCommand.Execute(ctx, &wg)
+				var resultError error
+				if testData.expectedResult.errorChannelError != nil {
+					resultError = <-errorChannel
+				}
+				outputData := make([]string, len(testData.expectedResult.outputChannelData))
+				for i := range testData.expectedResult.outputChannelData {
+					outputData[i] = <-outputChannel
+				}
+				wg.Wait()
+				ps = originalPs
 
-			var wg sync.WaitGroup
-			wg.Add(1)
-			go psCommand.Execute(&wg)
-			var resultError error
-			if testData.expectedResult.errorChannelError != nil {
-				resultError = <-errorChannel
+				assert.Equal(t, testData.expectedResult.outputChannelData, outputData)
+				assert.Equal(t, testData.expectedResult.errorChannelError, resultError)
+				assert.Equal(t, testData.expectedResult.psNumberOfCalls, psCallsNumber)
 			}
-			outputData := make([]string, len(testData.expectedResult.outputChannelData))
-			for i := range testData.expectedResult.outputChannelData {
-				outputData[i] = <-outputChannel
-			}
-			wg.Wait()
-			ps = originalPs
-
-			assert.Equal(t, testData.expectedResult.outputChannelData, outputData)
-			assert.Equal(t, testData.expectedResult.errorChannelError, resultError)
-			assert.Equal(t, testData.expectedResult.psNumberOfCalls, psCallsNumber)
 		})
 	}
 }
