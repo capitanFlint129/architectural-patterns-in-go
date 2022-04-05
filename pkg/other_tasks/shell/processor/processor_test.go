@@ -20,9 +20,11 @@ const (
 	unknownCommandTestCaseName        = "Command not exists"
 	unknownCommandInPipeTestCaseName  = "Command in pipe not exists"
 	commandExecutionErrorTestCaseName = "Error occurs while command executes"
+	commandSetArgsErrorTestCaseName   = "Error occurs while setting args"
 )
 
 var commandError = errors.New("Command error")
+var setArgsError = errors.New("Set args error")
 
 type consoleInput struct {
 	commandString     string
@@ -37,10 +39,12 @@ type inputData struct {
 	parsedCommands        []parsedCommand
 	processorCommands     []string
 	commandExecutionError error
+	setArgsError          error
 }
 
 type expectedResult struct {
 	commandExecutionNumber int
+	argsInSetArgs          []string
 	outputChannelData      []string
 	errorChannelErrors     []error
 }
@@ -52,11 +56,17 @@ type testCommand struct {
 	errorChannel      chan<- error
 	executionNumber   int
 	executionTestFunc func(inputChannel <-chan string, outputChannel chan<- string, errorChannel chan<- error, executionNumber int)
+	setArgsTestFunc   func(args []string) error
 }
 
-func (t *testCommand) Execute(wg *sync.WaitGroup) {
+func (t *testCommand) Execute(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	t.executionTestFunc(t.inputChannel, t.outputChannel, t.errorChannel, t.executionNumber)
+}
+
+func (t *testCommand) SetArgs(args []string) error {
+	t.args = args
+	return t.setArgsTestFunc(args)
 }
 
 // Test_Processor creates processor, starts command processing and checks that
@@ -126,13 +136,11 @@ func Test_Processor(t *testing.T) {
 			// Prepare commandCreators
 			commandCreatorsMap := make(map[string]commandCreator)
 			commandCreator := func(
-				args []string,
 				commandInputChannel <-chan string,
 				commandOutputChannel chan<- string,
 				commandErrorChannel chan<- error,
 			) command {
 				return &testCommand{
-					args:            args,
 					inputChannel:    commandInputChannel,
 					outputChannel:   commandOutputChannel,
 					errorChannel:    commandErrorChannel,
@@ -150,6 +158,9 @@ func Test_Processor(t *testing.T) {
 							assert.Equal(t, testData.inputData.consoleInput.commandInputLines[i], data)
 							commandOutputChannel <- data
 						}
+					},
+					setArgsTestFunc: func(args []string) error {
+						return testData.inputData.setArgsError
 					},
 				}
 			}
@@ -255,7 +266,6 @@ func Test_ProcessorError(t *testing.T) {
 			// Prepare commandCreators
 			commandCreatorsMap := make(map[string]commandCreator)
 			commandCreator := func(
-				args []string,
 				commandInputChannel <-chan string,
 				commandOutputChannel chan<- string,
 				commandErrorChannel chan<- error,
@@ -320,8 +330,29 @@ func Test_ProcessorCommandError(t *testing.T) {
 			},
 			expectedResult: expectedResult{
 				commandExecutionNumber: 1,
+				argsInSetArgs:          []string{},
 				outputChannelData:      []string{},
 				errorChannelErrors:     []error{commandError},
+			},
+		},
+		{
+			testCaseName: commandSetArgsErrorTestCaseName,
+			inputData: inputData{
+				consoleInput: consoleInput{
+					commandString: "command1\n",
+				},
+				parsedPipe: []string{"command1"},
+				parsedCommands: []parsedCommand{
+					{"command1"},
+				},
+				processorCommands: []string{"command1"},
+				setArgsError:      setArgsError,
+			},
+			expectedResult: expectedResult{
+				commandExecutionNumber: 0,
+				argsInSetArgs:          []string{},
+				outputChannelData:      []string{},
+				errorChannelErrors:     []error{setArgsError},
 			},
 		},
 	} {
@@ -345,13 +376,11 @@ func Test_ProcessorCommandError(t *testing.T) {
 			// Prepare commandCreators
 			commandCreatorsMap := make(map[string]commandCreator)
 			commandCreator := func(
-				args []string,
 				commandInputChannel <-chan string,
 				commandOutputChannel chan<- string,
 				commandErrorChannel chan<- error,
 			) command {
 				return &testCommand{
-					args:            args,
 					inputChannel:    commandInputChannel,
 					outputChannel:   commandOutputChannel,
 					errorChannel:    commandErrorChannel,
@@ -365,6 +394,10 @@ func Test_ProcessorCommandError(t *testing.T) {
 						executionNumber++
 						assert.Equal(t, testData.expectedResult.commandExecutionNumber, executionNumber)
 						commandErrorChannel <- testData.inputData.commandExecutionError
+					},
+					setArgsTestFunc: func(args []string) error {
+						assert.Equal(t, testData.expectedResult.argsInSetArgs, args)
+						return testData.inputData.setArgsError
 					},
 				}
 			}

@@ -56,7 +56,7 @@ func Test_Receiver(t *testing.T) {
 			}
 			cancel()
 
-			wg.Wait() // TODO вопрос: wg в тесте?
+			wg.Wait()
 			assert.Equal(t, testData.expectedResult.outputChannelDataLines, outputChannelLines)
 		})
 	}
