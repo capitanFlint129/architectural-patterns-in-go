@@ -2,6 +2,10 @@
 
 HTTP server and client for event planning application. Server and client implemented using the standard library.
 
+## Class diagram
+
+![](../../../doc/other_tasks/calendar/calendar_class.png?raw=true)
+
 ## API handlers
 
 ### Create event
