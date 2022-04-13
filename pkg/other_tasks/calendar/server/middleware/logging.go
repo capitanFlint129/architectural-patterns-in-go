@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 type loggingMiddleware struct {
@@ -14,19 +13,12 @@ type loggingMiddleware struct {
 }
 
 func (l *loggingMiddleware) CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error) {
-	// TODO под время отдельный middleware
-	// TODO prometheus - логгер - сервис
-	start := time.Now()
 	createdEvent, err := l.service.CreateEvent(ctx, createEventData)
-	duration := time.Since(start).Microseconds()
-
 	l.logger.WithFields(logrus.Fields{
-		"user_id":  createEventData.UserId,
-		"name":     createdEvent.Name,
-		"date":     createdEvent.Date.Format(l.logDateFormat),
-		"duration": duration,
+		"user_id": createEventData.UserId,
+		"name":    createdEvent.Name,
+		"date":    createdEvent.Date.Format(l.logDateFormat),
 	}).Info()
-
 	return createdEvent, err
 }
 

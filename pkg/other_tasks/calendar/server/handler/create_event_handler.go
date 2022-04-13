@@ -34,7 +34,7 @@ func (c *createEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	event, err = c.calendar.CreateEvent(ctx, createEventData)
 	if err != nil {
-		c.errorTransport.EncodeError(w, err, http.StatusInternalServerError)
+		c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
 		return
 	}
 
