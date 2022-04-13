@@ -25,16 +25,7 @@ Parameters
 |  date   | string in format "YYYY-MM-DD" | Body |   Yes    |                date of event                 |
 
 
-Request example:
-
-```http request
-POST /create_event
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&name=event1&date=2019-12-20
-```
-
-Response
+Response example
 
 ```
 Status: 201 Created
@@ -73,16 +64,7 @@ Parameters
 | new_name |       new name of event       | Body |    No    |              new name of event               |
 | new_date | string in format "YYYY-MM-DD" | Body |    No    |              new date of event               |
 
-Request example:
-
-```http request
-POST /update_event
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&old_name=event1&old_date=2019-12-20&new_name=event2&new_date=2019-11-20
-```
-
-Response
+Response example
 
 ```
 Status: 200 OK
@@ -122,16 +104,7 @@ Parameters
 |  date   | string in format "YYYY-MM-DD" | Body |   Yes    |    date of event to be deleted     |
 
 
-Request example:
-
-```http request
-POST /delete_event
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&name=event1&date=2019-12-20
-```
-
-Response
+Response example
 
 ```
 Status: 204 No Content
@@ -170,16 +143,7 @@ Parameters
 |  date   | string in format "YYYY-MM-DD" | Query |   Yes    |                   Date                   |
 
 
-Request example:
-
-```http request
-GET /events_for_week
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&date=2019-12-20
-```
-
-Response
+Response example
 
 ```
 Status: 200 OK
@@ -228,16 +192,7 @@ Parameters
 |  date   | string in format "YYYY-MM-DD" | Query |   Yes    |   The date that is the start of the week    |
 
 
-Request example:
-
-```http request
-GET /events_for_week
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&date=2019-12-20
-```
-
-Response
+Response example
 
 ```
 Status: 200 OK
@@ -287,16 +242,7 @@ Parameters
 |  date   | string in format "YYYY-MM-DD" | Query |   Yes    | The date by which the month is determined |
 
 
-Request example:
-
-```http request
-GET /events_for_month
-Content-Type: application/x-www-form-urlencoded
-
-user_id=1&date=2019-12-20
-```
-
-Response
+Response example
 
 ```
 Status: 200 OK
