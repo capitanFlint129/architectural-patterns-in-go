@@ -132,7 +132,7 @@ Status codes
 Get all events for the specified day.
 
 ```http request
-GET /events_for_week
+GET /events_for_day
 ```
 
 Parameters
