@@ -1,0 +1,124 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+' Server
+
+interface Handler {
+	+ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class createEventServer {
+    -transport: CreateEventTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+class createEventServer implements Handler
+
+
+interface Service {
+    +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
+'    +UpdateEvent()
+'    +DeleteEvent()
+'    +GetEventsForDay()
+'    +GetEventsForWeek()
+'    +GetEventsForMonth()
+}
+
+class calendar {
+    -events: map[int][]types.Event
+    +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
+}
+
+class calendar implements Service
+
+
+createEventServer o---> Service
+
+interface CreateEventTransport {
+    +DecodeRequest(r *http.Request) : (types.CreateEventData, error)
+    +EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+
+class createEventTransport {
+    +DecodeRequest(r *http.Request) : (types.CreateEventData, error
+    +EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+createEventServer o--> ErrorTransport
+
+class createEventTransport implements CreateEventTransport
+
+interface ErrorTransport {
+    +EncodeError(w http.ResponseWriter, error, statusCode int)
+}
+
+class errorTransport {
+    +EncodeError(w http.ResponseWriter, error, statusCode int)
+}
+
+class errorTransport implements ErrorTransport
+
+createEventServer o--> CreateEventTransport
+
+
+' Client
+
+class client {
+    -createEventClientTransport CreateEventClientTransport
+    +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
+}
+
+class client implements Service
+
+
+interface CreateEventClientTransport {
+    +EncodeRequest(createEventData types.CreateEventData) : (*http.Request, error)
+    +DecodeResponse(r *http.Response) : (types.Event, error)
+}
+
+class createEventClientTransport {
+    -errorClientTransport: ErrorClientTransport
+    +EncodeRequest(createEventData types.CreateEventData) : (*http.Request, error)
+    +DecodeResponse(r *http.Response) : (types.Event, error)
+}
+
+class createEventClientTransport implements CreateEventClientTransport
+
+
+client o--> CreateEventClientTransport
+
+
+interface ErrorClientTransport {
+    +DecodeError(r *http.Response) : error
+}
+
+class errorClientTransport {
+    +DecodeError(r *http.Response) : error
+}
+
+class errorClientTransport implements ErrorClientTransport
+createEventClientTransport o--> ErrorClientTransport
+
+
+' Middleware
+class loggingMiddleware {
+    -service: Service
+    -logger: *logrus.Logger
+    +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
+}
+
+class loggingMiddleware implements Service
+
+loggingMiddleware o--> Service
+
+class requestTimeMiddleware {
+    -service: Service
+    +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
+}
+
+class requestTimeMiddleware implements Service
+
+requestTimeMiddleware o--> Service
+
+
+@enduml

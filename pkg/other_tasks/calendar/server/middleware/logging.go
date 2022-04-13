@@ -1,42 +1,39 @@
 package middleware
 
 import (
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/server/types"
+	"context"
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"github.com/sirupsen/logrus"
 	"time"
 )
 
-// TODO вынести формат куда-то
-const dateFormat = "2006-01-02"
-
-type service interface {
-	CreateEvent(userId int, eventName string, eventDate time.Time) (types.Event, error)
-}
-
 type loggingMiddleware struct {
-	service service
-	logger  *logrus.Logger
+	service       service
+	logDateFormat string
+	logger        *logrus.Logger
 }
 
-func (l *loggingMiddleware) CreateEvent(userId int, eventName string, eventDate time.Time) (types.Event, error) {
-
+func (l *loggingMiddleware) CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error) {
+	// TODO под время отдельный middleware
+	// TODO prometheus - логгер - сервис
 	start := time.Now()
-	event, err := l.service.CreateEvent(userId, eventName, eventDate)
+	createdEvent, err := l.service.CreateEvent(ctx, createEventData)
 	duration := time.Since(start).Microseconds()
 
 	l.logger.WithFields(logrus.Fields{
-		"user_id":  userId,
-		"name":     eventName,
-		"date":     eventDate.Format(dateFormat),
+		"user_id":  createEventData.UserId,
+		"name":     createdEvent.Name,
+		"date":     createdEvent.Date.Format(l.logDateFormat),
 		"duration": duration,
 	}).Info()
 
-	return event, err
+	return createdEvent, err
 }
 
-func NewLoggingMiddleware(service service, logger *logrus.Logger) Middleware {
+func NewLoggingMiddleware(service service, logger *logrus.Logger, logDateFormat string) service {
 	return &loggingMiddleware{
-		service: service,
-		logger:  logger,
+		service:       service,
+		logger:        logger,
+		logDateFormat: logDateFormat,
 	}
 }
