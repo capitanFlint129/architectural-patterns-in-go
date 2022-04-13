@@ -11,10 +11,16 @@ type createEventTransport interface {
 	EncodeResponse(w http.ResponseWriter, event types.Event) error
 }
 
+type updateEventTransport interface {
+	DecodeRequest(r *http.Request) (types.UpdateEventData, error)
+	EncodeResponse(w http.ResponseWriter, event types.Event) error
+}
+
 type errorTransport interface {
 	EncodeError(w http.ResponseWriter, err error, statusCode int)
 }
 
 type service interface {
 	CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error)
+	UpdateEvent(ctx context.Context, updateEventData types.UpdateEventData) (types.Event, error)
 }

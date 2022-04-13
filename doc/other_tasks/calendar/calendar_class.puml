@@ -15,6 +15,14 @@ class createEventServer {
 }
 class createEventServer implements Handler
 
+class updateEventServer {
+    -transport: UpdateEventTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+class updateEventServer implements Handler
+
 
 interface Service {
     +CreateEvent(ctx context.Context, createEventData types.CreateEventData) : (types.Event, error)
