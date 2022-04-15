@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface Service {
+	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
+	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+}
+
+class loggingMiddleware {
+    -service: Service
+    -logger: *logrus.Logger
+    +CreateEvent(ctx context.Context, data types.CreateEventData) : (types.Event, error)
+}
+
+class loggingMiddleware implements Service
+
+loggingMiddleware o--> Service
+
+class requestDurationMiddleware {
+    -service: Service
+    +CreateEvent(ctx context.Context, data types.CreateEventData) : (types.Event, error)
+}
+
+class requestDurationMiddleware implements Service
+
+requestDurationMiddleware o--> Service
+
+
+@enduml
