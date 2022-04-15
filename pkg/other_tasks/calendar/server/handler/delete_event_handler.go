@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type deleteEventHandler struct {
+type deleteEventServer struct {
 	transport      deleteEventTransport
 	calendar       service
 	errorTransport errorTransport
 }
 
-func (c *deleteEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *deleteEventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
 		data types.EventHandlerData
 		err  error
@@ -43,8 +43,8 @@ func (c *deleteEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewDeleteEventHandler(transport deleteEventTransport, calendar service, errorTransport errorTransport) http.Handler {
-	return &deleteEventHandler{
+func NewDeleteEventServer(transport deleteEventTransport, calendar service, errorTransport errorTransport) http.Handler {
+	return &deleteEventServer{
 		transport:      transport,
 		calendar:       calendar,
 		errorTransport: errorTransport,

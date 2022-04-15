@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type eventsForWeekHandler struct {
+type eventsForWeekServer struct {
 	transport      eventsForWeekTransport
 	calendar       service
 	errorTransport errorTransport
 }
 
-func (c *eventsForWeekHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *eventsForWeekServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
 		data   types.DateHandlerData
 		events []types.Event
@@ -44,8 +44,8 @@ func (c *eventsForWeekHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func NewEventsForWeekHandler(transport eventsForWeekTransport, calendar service, errorTransport errorTransport) http.Handler {
-	return &eventsForWeekHandler{
+func NewEventsForWeekServer(transport eventsForWeekTransport, calendar service, errorTransport errorTransport) http.Handler {
+	return &eventsForWeekServer{
 		transport:      transport,
 		calendar:       calendar,
 		errorTransport: errorTransport,

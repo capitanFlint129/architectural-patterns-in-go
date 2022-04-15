@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-type updateEventHandler struct {
+type updateEventServer struct {
 	transport      updateEventTransport
 	calendar       service
 	errorTransport errorTransport
 }
 
-func (c *updateEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *updateEventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
 		data  types.EventHandlerData
 		event types.Event
@@ -44,8 +44,8 @@ func (c *updateEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewUpdateEventHandler(transport updateEventTransport, calendar service, errorTransport errorTransport) http.Handler {
-	return &updateEventHandler{
+func NewUpdateEventServer(transport updateEventTransport, calendar service, errorTransport errorTransport) http.Handler {
+	return &updateEventServer{
 		transport:      transport,
 		calendar:       calendar,
 		errorTransport: errorTransport,
