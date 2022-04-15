@@ -1,0 +1,190 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+' Interfaces
+interface Service {
+	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
+	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+}
+
+interface Handler {
+	+ServeHTTP(w ResponseWriter, r *Request)
+}
+
+interface CreateEventTransport  {
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+
+interface UpdateEventTransport  {
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+
+interface DeleteEventTransport  {
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter) : error
+}
+
+interface EventsForDayTransport  {
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+interface EventsForWeekTransport  {
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+interface EventsForMonthTransport  {
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+interface ErrorTransport {
+    +EncodeError(w http.ResponseWriter, error, statusCode int)
+}
+
+
+' Classes
+
+class calendar {
+    -events: map[int]map[string]types.Event
+    +CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
+    +UpdateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
+    +DeleteEvent(ctx context.Context, data types.EventHandlerData) : error
+    +EventsForDay(ctx context.Context, data types.DateHandlerData) : ([]types.Event, error)
+    +EventsForWeek(ctx context.Context, data types.DateHandlerData) : ([]types.Event, error)
+    +EventsForMonth(ctx context.Context, data types.DateHandlerData) : ([]types.Event, error)
+}
+
+
+class createEventServer {
+	-transport: CreateEventTransport
+	-calendar: Service
+	-errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class updateEventServer {
+    -transport: UpdateEventTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class deleteEventServer {
+    -transport: DeleteEventTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class eventsForDayServer {
+    -transport: EventsForDayTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class eventsForWeekServer {
+    -transport: EventsForWeekTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class eventsForMonthServer {
+    -transport: EventsForMonthTransport
+    -calendar: Service
+    -errorTransport: ErrorTransport
+    +ServeHTTP(w ResponseWriter, r *Request)
+}
+
+class createEventTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+
+class updateEventTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, event types.Event) : error
+}
+
+class deleteEventTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.EventHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter) : error
+}
+
+class eventsForDayTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+class eventsForWeekTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+class eventsForMonthTransport  {
+    -dateFormat string
+	+DecodeRequest(r *http.Request) : (types.DateHandlerData, error)
+	+EncodeResponse(w http.ResponseWriter, events []types.Event) : error
+}
+
+class errorTransport {
+    +EncodeError(w http.ResponseWriter, error, statusCode int)
+}
+
+' Connections
+
+class calendar implements Service
+
+class createEventServer implements Handler
+class updateEventServer implements Handler
+class deleteEventServer implements Handler
+class eventsForDayServer implements Handler
+class eventsForWeekServer implements Handler
+class eventsForMonthServer implements Handler
+
+class createEventTransport implements CreateEventTransport
+class updateEventTransport implements UpdateEventTransport
+class deleteEventTransport implements DeleteEventTransport
+class eventsForDayTransport implements EventsForDayTransport
+class eventsForWeekTransport implements EventsForWeekTransport
+class eventsForMonthTransport implements EventsForMonthTransport
+class errorTransport implements ErrorTransport
+
+
+createEventServer o---> Service
+updateEventServer o---> Service
+deleteEventServer o---> Service
+eventsForDayServer o---> Service
+eventsForWeekServer o---> Service
+eventsForMonthServer o---> Service
+
+
+createEventServer o--> CreateEventTransport
+updateEventServer o--> UpdateEventTransport
+deleteEventServer o--> DeleteEventTransport
+eventsForDayServer o--> EventsForDayTransport
+eventsForDayServer o--> EventsForWeekTransport
+eventsForDayServer o--> EventsForMonthTransport
+
+createEventServer o--> ErrorTransport
+updateEventServer o--> ErrorTransport
+deleteEventServer o--> ErrorTransport
+eventsForDayServer o--> ErrorTransport
+eventsForWeekServer o--> ErrorTransport
+eventsForMonthServer o--> ErrorTransport
+
+@enduml

@@ -8,6 +8,14 @@ HTTP server and client for event planning application. Server and client impleme
 
 ![](../../../doc/other_tasks/calendar/calendar_client_class.png?raw=true)
 
+### Server diagram
+
+![](../../../doc/other_tasks/calendar/calendar_server_class.png?raw=true)
+
+### Middleware diagram
+
+![](../../../doc/other_tasks/calendar/calendar_middleware_class.png?raw=true)
+
 ## API handlers
 
 ### Create event
