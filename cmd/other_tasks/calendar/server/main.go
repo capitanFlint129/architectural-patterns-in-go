@@ -21,17 +21,26 @@ const (
 
 	addr = ":8080"
 
-	createEventPathPattern = "/create_event"
-	prometheusPathPattern  = "/metrics"
+	createEventPathPattern    = "/create_event"
+	updateEventPathPattern    = "/update_event"
+	deleteEventPathPattern    = "/delete_event"
+	eventsForDayPathPattern   = "/event_for_day"
+	eventsForWeekPathPattern  = "/event_for_week"
+	eventsForMonthPathPattern = "/event_for_month"
+
+	prometheusPathPattern = "/metrics"
 )
 
 func main() {
 	logger := logrus.New()
-	requestDurationMetric := promauto.NewHistogram(prometheus.HistogramOpts{
-		Name:    "request_duration",
-		Help:    "Duration of request metric",
-		Buckets: prometheus.LinearBuckets(0, 1, 5),
-	})
+	requestDurationMetric := promauto.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "request_duration",
+			Help:    "Duration of request metric",
+			Buckets: prometheus.LinearBuckets(0, 1, 5),
+		},
+		[]string{"handler"},
+	)
 
 	calendarService := middleware.NewRequestDurationMiddleware(
 		middleware.NewLoggingMiddleware(service.NewCalendar(), logger, dateFormat),

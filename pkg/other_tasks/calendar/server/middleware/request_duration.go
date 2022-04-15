@@ -4,24 +4,68 @@ import (
 	"context"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"github.com/prometheus/client_golang/prometheus"
-	"math/rand"
 	"time"
+)
+
+const (
+	createEventRequestDurationMetricLabel    = "create_event"
+	updateEventRequestDurationMetricLabel    = "update_event"
+	deleteEventRequestDurationMetricLabel    = "delete_event"
+	eventsForDayRequestDurationMetricLabel   = "event_for_day"
+	eventsForWeekRequestDurationMetricLabel  = "event_for_week"
+	eventsForMonthRequestDurationMetricLabel = "event_for_month"
 )
 
 type requestDurationMiddleware struct {
 	service               service
-	requestDurationMetric prometheus.Histogram
+	requestDurationMetric *prometheus.HistogramVec
 }
 
-func (r *requestDurationMiddleware) CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error) {
+func (r *requestDurationMiddleware) CreateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
 	start := time.Now()
-	createdEvent, err := r.service.CreateEvent(ctx, data)
-	time.Sleep(time.Duration(rand.Int()%5) * time.Second)
-	r.requestDurationMetric.Observe(time.Since(start).Seconds())
-	return createdEvent, err
+	event, err := r.service.CreateEvent(ctx, data)
+	r.requestDurationMetric.WithLabelValues(createEventRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return event, err
 }
 
-func NewRequestDurationMiddleware(service service, requestDurationMetric prometheus.Histogram) service {
+func (r *requestDurationMiddleware) UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
+	start := time.Now()
+	event, err := r.service.UpdateEvent(ctx, data)
+	r.requestDurationMetric.WithLabelValues(updateEventRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return event, err
+}
+
+func (r *requestDurationMiddleware) DeleteEvent(ctx context.Context, data types.EventHandlerData) error {
+	start := time.Now()
+	err := r.service.DeleteEvent(ctx, data)
+	r.requestDurationMetric.WithLabelValues(deleteEventRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return err
+}
+
+func (r *requestDurationMiddleware) EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
+	start := time.Now()
+	events, err := r.service.EventsForDay(ctx, data)
+	r.requestDurationMetric.WithLabelValues(eventsForDayRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return events, err
+}
+
+func (r *requestDurationMiddleware) EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
+	start := time.Now()
+	defer r.requestDurationMetric.WithLabelValues(eventsForWeekRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return r.service.EventsForWeek(ctx, data)
+}
+
+func (r *requestDurationMiddleware) EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
+	start := time.Now()
+	events, err := r.service.EventsForMonth(ctx, data)
+	r.requestDurationMetric.WithLabelValues(eventsForMonthRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return events, err
+}
+
+func NewRequestDurationMiddleware(
+	service service,
+	requestDurationMetric *prometheus.HistogramVec,
+) service {
 	return &requestDurationMiddleware{
 		service:               service,
 		requestDurationMetric: requestDurationMetric,
