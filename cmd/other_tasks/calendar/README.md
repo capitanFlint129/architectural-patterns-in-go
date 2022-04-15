@@ -4,7 +4,9 @@ HTTP server and client for event planning application. Server and client impleme
 
 ## Class diagram
 
-![](../../../doc/other_tasks/calendar/calendar_class.png?raw=true)
+### Client diagram
+
+![](../../../doc/other_tasks/calendar/calendar_client_class.png?raw=true)
 
 ## API handlers
 

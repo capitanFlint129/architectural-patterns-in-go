@@ -1,0 +1,163 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+' Interfaces
+
+interface Service {
+	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
+	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+}
+
+interface CreateEventClientTransport {
+	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) (types.Event, error)
+}
+
+interface UpdateEventClientTransport {
+	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) (types.Event, error)
+}
+
+interface DeleteEventClientTransport {
+	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) error
+}
+
+interface EventsForDayClientTransport {
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+interface EventsForWeekClientTransport {
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+interface EventsForMonthClientTransport {
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+interface ErrorClientTransport {
+    +DecodeError(r *http.Response) : error
+}
+
+'Classes
+
+class client {
+    -createEventClientTransport:    CreateEventClientTransport
+    -updateEventClientTransport:    UpdateEventClientTransport
+    -deleteEventClientTransport:    DeleteEventClientTransport
+    -eventsForDayClientTransport:  EventsForDayClientTransport
+    -eventsForWeekClientTransport:  EventsForWeekClientTransport
+    -eventsForMonthClientTransport: EventsForMonthClientTransport
+
+	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
+	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+}
+
+class createEventClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+    +EncodeRequest(data types.CreateEventData) : (*http.Request, error)
+    +DecodeResponse(r *http.Response) : (types.Event, error)
+}
+
+class updateEventClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+    +EncodeRequest(data types.CreateEventData) : (*http.Request, error)
+    +DecodeResponse(r *http.Response) : (types.Event, error)
+}
+
+class deleteEventClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) error
+}
+
+class eventsForDayClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+class eventsForWeekClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+class eventsForMonthClientTransport {
+    -url: *url.URL
+    -path: string
+    -httpMethod: string
+    -errorTransport: ErrorClientTransport
+    -dateFormat: string
+
+	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+DecodeResponse(r *http.Response) ([]types.Event, error)
+}
+
+class errorClientTransport {
+    +DecodeError(r *http.Response) : error
+}
+
+' Connections
+
+class client implements Service
+class createEventClientTransport implements CreateEventClientTransport
+class updateEventClientTransport implements UpdateEventClientTransport
+class deleteEventClientTransport implements DeleteEventClientTransport
+class eventsForDayClientTransport implements EventsForDayClientTransport
+class eventsForWeekClientTransport implements EventsForWeekClientTransport
+class eventsForMonthClientTransport implements EventsForMonthClientTransport
+class errorClientTransport implements ErrorClientTransport
+
+
+client o--> CreateEventClientTransport
+client o--> UpdateEventClientTransport
+client o--> DeleteEventClientTransport
+client o--> EventsForDayClientTransport
+client o--> EventsForWeekClientTransport
+client o--> EventsForMonthClientTransport
+
+createEventClientTransport o--> ErrorClientTransport
+updateEventClientTransport o--> ErrorClientTransport
+deleteEventClientTransport o--> ErrorClientTransport
+eventsForDayClientTransport o--> ErrorClientTransport
+eventsForWeekClientTransport o--> ErrorClientTransport
+eventsForMonthClientTransport o--> ErrorClientTransport
+
+@enduml
