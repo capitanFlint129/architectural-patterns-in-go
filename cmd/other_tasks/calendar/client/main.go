@@ -97,7 +97,7 @@ func main() {
 	date := time.Now()
 	event, err = calendarClient.CreateEvent(
 		ctx,
-		types.HandlerEventData{
+		types.EventHandlerData{
 			UserId: 0,
 			Event: types.Event{
 				Name: "event1",
@@ -113,7 +113,7 @@ func main() {
 	// update event
 	event, err = calendarClient.UpdateEvent(
 		ctx,
-		types.HandlerEventData{
+		types.EventHandlerData{
 			UserId: 0,
 			Event: types.Event{
 				Name: "event2",
@@ -129,7 +129,7 @@ func main() {
 	// delete event
 	err = calendarClient.DeleteEvent(
 		ctx,
-		types.HandlerEventData{
+		types.EventHandlerData{
 			UserId: 0,
 			Event: types.Event{
 				Name: "event2",
@@ -156,7 +156,7 @@ func main() {
 		for j := 0; j < 2; j++ {
 			_, err = calendarClient.CreateEvent(
 				ctx,
-				types.HandlerEventData{
+				types.EventHandlerData{
 					UserId: 0,
 					Event: types.Event{
 						Name: fmt.Sprintf("event%d_%d", i, j),
@@ -172,7 +172,7 @@ func main() {
 	// events for day
 	events, err = calendarClient.EventsForDay(
 		ctx,
-		types.HandlerDateData{
+		types.DateHandlerData{
 			UserId: 0,
 			Date:   date,
 		},
@@ -188,7 +188,7 @@ func main() {
 	// events for week
 	events, err = calendarClient.EventsForDay(
 		ctx,
-		types.HandlerDateData{
+		types.DateHandlerData{
 			UserId: 0,
 			Date:   date,
 		},
@@ -204,7 +204,7 @@ func main() {
 	// events for month
 	events, err = calendarClient.EventsForMonth(
 		ctx,
-		types.HandlerDateData{
+		types.DateHandlerData{
 			UserId: 0,
 			Date:   date,
 		},

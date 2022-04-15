@@ -14,7 +14,7 @@ type createEventHandler struct {
 
 func (c *createEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
-		data  types.HandlerEventData
+		data  types.EventHandlerData
 		event types.Event
 		err   error
 	)

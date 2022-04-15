@@ -7,42 +7,42 @@ import (
 )
 
 type createEventClientTransport interface {
-	EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) (types.Event, error)
 }
 
 type updateEventClientTransport interface {
-	EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) (types.Event, error)
 }
 
 type deleteEventClientTransport interface {
-	EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) error
 }
 
 type eventsForDayClientTransport interface {
-	EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	EncodeRequest(data types.DateHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) ([]types.Event, error)
 }
 
 type eventsForWeekClientTransport interface {
-	EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	EncodeRequest(data types.DateHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) ([]types.Event, error)
 }
 
 type eventsForMonthClientTransport interface {
-	EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	EncodeRequest(data types.DateHandlerData) (*http.Request, error)
 	DecodeResponse(r *http.Response) ([]types.Event, error)
 }
 
 type service interface {
-	CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error)
-	UpdateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error)
-	DeleteEvent(ctx context.Context, data types.HandlerEventData) error
-	EventsForDay(ctx context.Context, data types.HandlerDateData) ([]types.Event, error)
-	EventsForWeek(ctx context.Context, data types.HandlerDateData) ([]types.Event, error)
-	EventsForMonth(ctx context.Context, data types.HandlerDateData) ([]types.Event, error)
+	CreateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error)
+	UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error)
+	DeleteEvent(ctx context.Context, data types.EventHandlerData) error
+	EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
+	EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
+	EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
 }
 
 type client struct {
@@ -54,7 +54,7 @@ type client struct {
 	eventsForMonthClientTransport eventsForMonthClientTransport
 }
 
-func (c *client) CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error) {
+func (c *client) CreateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
 	var (
 		req   *http.Request
 		resp  *http.Response
@@ -76,7 +76,7 @@ func (c *client) CreateEvent(ctx context.Context, data types.HandlerEventData) (
 	return event, nil
 }
 
-func (c *client) UpdateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error) {
+func (c *client) UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
 	var (
 		req   *http.Request
 		resp  *http.Response
@@ -98,7 +98,7 @@ func (c *client) UpdateEvent(ctx context.Context, data types.HandlerEventData) (
 	return event, nil
 }
 
-func (c *client) DeleteEvent(ctx context.Context, data types.HandlerEventData) error {
+func (c *client) DeleteEvent(ctx context.Context, data types.EventHandlerData) error {
 	var (
 		req  *http.Request
 		resp *http.Response
@@ -119,7 +119,7 @@ func (c *client) DeleteEvent(ctx context.Context, data types.HandlerEventData) e
 	return nil
 }
 
-func (c *client) EventsForDay(ctx context.Context, data types.HandlerDateData) ([]types.Event, error) {
+func (c *client) EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
 	var (
 		req    *http.Request
 		resp   *http.Response
@@ -141,7 +141,7 @@ func (c *client) EventsForDay(ctx context.Context, data types.HandlerDateData) (
 	return events, nil
 }
 
-func (c *client) EventsForWeek(ctx context.Context, data types.HandlerDateData) ([]types.Event, error) {
+func (c *client) EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
 	var (
 		req    *http.Request
 		resp   *http.Response
@@ -163,7 +163,7 @@ func (c *client) EventsForWeek(ctx context.Context, data types.HandlerDateData) 
 	return events, nil
 }
 
-func (c *client) EventsForMonth(ctx context.Context, data types.HandlerDateData) ([]types.Event, error) {
+func (c *client) EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
 	var (
 		req    *http.Request
 		resp   *http.Response

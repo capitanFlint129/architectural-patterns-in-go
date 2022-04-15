@@ -18,7 +18,7 @@ type createEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
+func (c *createEventClientTransport) EncodeRequest(data types.EventHandlerData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("name", data.Event.Name)

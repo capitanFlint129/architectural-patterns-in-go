@@ -18,7 +18,7 @@ type deleteEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *deleteEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
+func (c *deleteEventClientTransport) EncodeRequest(data types.EventHandlerData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("name", data.Event.Name)

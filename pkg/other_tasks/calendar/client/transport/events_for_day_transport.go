@@ -17,7 +17,7 @@ type eventsForDayClientTransport struct {
 	dateFormat     string
 }
 
-func (c *eventsForDayClientTransport) EncodeRequest(data types.HandlerDateData) (*http.Request, error) {
+func (c *eventsForDayClientTransport) EncodeRequest(data types.DateHandlerData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("date", data.Date.Format(c.dateFormat))

@@ -7,12 +7,12 @@ type Event struct {
 	Date time.Time `json:"date"`
 }
 
-type HandlerEventData struct {
+type EventHandlerData struct {
 	UserId int   `json:"user_id"`
 	Event  Event `json:"event"`
 }
 
-type HandlerDateData struct {
+type DateHandlerData struct {
 	UserId int       `json:"user_id"`
 	Date   time.Time `json:"date"`
 }
