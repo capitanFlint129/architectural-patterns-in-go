@@ -12,7 +12,6 @@ import (
 
 type createEventClientTransport struct {
 	url            *url.URL
-	path           string
 	httpMethod     string
 	errorTransport ErrorClientTransport
 	dateFormat     string
@@ -50,11 +49,10 @@ func (c *createEventClientTransport) DecodeResponse(r *http.Response) (types.Eve
 }
 
 func NewCreateEventClientTransport(
-	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
+	url *url.URL, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
 ) CreateEventClientTransport {
 	return &createEventClientTransport{
 		url:            url,
-		path:           path,
 		httpMethod:     httpMethod,
 		errorTransport: errorTransport,
 		dateFormat:     dateFormat,

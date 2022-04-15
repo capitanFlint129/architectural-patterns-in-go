@@ -32,48 +32,48 @@ const (
 )
 
 func main() {
-	logger := logrus.New()
-	parsedUrl, _ := url.Parse(calendarUrl)
 	errorTransport := transport.NewErrorClientTransport()
+	logger := logrus.New()
 
+	var parsedUrl *url.URL
+	parsedUrl, _ = url.Parse(calendarUrl + createEventPath)
 	createEventTransport := transport.NewCreateEventClientTransport(
 		parsedUrl,
-		createEventPath,
 		createEventHttpMethod,
 		errorTransport,
 		dateFormat,
 	)
+	parsedUrl, _ = url.Parse(calendarUrl + updateEventPath)
 	updateEventTransport := transport.NewUpdateEventClientTransport(
 		parsedUrl,
-		updateEventPath,
 		updateEventHttpMethod,
 		errorTransport,
 		dateFormat,
 	)
+	parsedUrl, _ = url.Parse(calendarUrl + deleteEventPath)
 	deleteEventTransport := transport.NewDeleteEventClientTransport(
 		parsedUrl,
-		deleteEventPath,
 		deleteEventHttpMethod,
 		errorTransport,
 		dateFormat,
 	)
+	parsedUrl, _ = url.Parse(calendarUrl + eventsForDayPath)
 	eventsForDayTransport := transport.NewEventsForDayClientTransport(
 		parsedUrl,
-		eventsForDayPath,
 		eventsForDayHttpMethod,
 		errorTransport,
 		dateFormat,
 	)
+	parsedUrl, _ = url.Parse(calendarUrl + eventsForWeekPath)
 	eventsForWeekTransport := transport.NewEventsForWeekClientTransport(
 		parsedUrl,
-		eventsForWeekPath,
 		eventsForWeekHttpMethod,
 		errorTransport,
 		dateFormat,
 	)
+	parsedUrl, _ = url.Parse(calendarUrl + eventsForMonthPath)
 	eventsForMonthTransport := transport.NewEventsForMonthClientTransport(
 		parsedUrl,
-		eventsForMonthPath,
 		eventsForMonthHttpMethod,
 		errorTransport,
 		dateFormat,

@@ -12,7 +12,6 @@ import (
 
 type deleteEventClientTransport struct {
 	url            *url.URL
-	path           string
 	httpMethod     string
 	errorTransport ErrorClientTransport
 	dateFormat     string
@@ -50,11 +49,10 @@ func (c *deleteEventClientTransport) DecodeResponse(r *http.Response) error {
 }
 
 func NewDeleteEventClientTransport(
-	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
+	url *url.URL, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
 ) DeleteEventClientTransport {
 	return &deleteEventClientTransport{
 		url:            url,
-		path:           path,
 		httpMethod:     httpMethod,
 		errorTransport: errorTransport,
 		dateFormat:     dateFormat,

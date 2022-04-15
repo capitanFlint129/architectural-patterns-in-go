@@ -11,7 +11,6 @@ import (
 
 type eventsForWeekClientTransport struct {
 	url            *url.URL
-	path           string
 	httpMethod     string
 	errorTransport ErrorClientTransport
 	dateFormat     string
@@ -49,11 +48,10 @@ func (c *eventsForWeekClientTransport) DecodeResponse(r *http.Response) ([]types
 }
 
 func NewEventsForWeekClientTransport(
-	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
+	url *url.URL, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
 ) EventsForWeekClientTransport {
 	return &eventsForWeekClientTransport{
 		url:            url,
-		path:           path,
 		httpMethod:     httpMethod,
 		errorTransport: errorTransport,
 		dateFormat:     dateFormat,

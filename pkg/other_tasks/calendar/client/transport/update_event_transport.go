@@ -12,7 +12,6 @@ import (
 
 type updateEventClientTransport struct {
 	url            *url.URL
-	path           string
 	httpMethod     string
 	errorTransport ErrorClientTransport
 	dateFormat     string
@@ -50,11 +49,10 @@ func (c *updateEventClientTransport) DecodeResponse(r *http.Response) (types.Eve
 }
 
 func NewUpdateEventClientTransport(
-	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
+	url *url.URL, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
 ) UpdateEventClientTransport {
 	return &updateEventClientTransport{
 		url:            url,
-		path:           path,
 		httpMethod:     httpMethod,
 		errorTransport: errorTransport,
 		dateFormat:     dateFormat,
