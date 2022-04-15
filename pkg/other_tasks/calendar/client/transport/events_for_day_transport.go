@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 )
 
-type createEventClientTransport struct {
+type eventsForDayClientTransport struct {
 	url            *url.URL
 	path           string
 	httpMethod     string
@@ -18,13 +17,13 @@ type createEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
+func (c *eventsForDayClientTransport) EncodeRequest(data types.HandlerDateData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
-	params.Set("name", data.Event.Name)
-	params.Set("date", data.Event.Date.Format(c.dateFormat))
+	params.Set("date", data.Date.Format(c.dateFormat))
+	c.url.RawQuery = params.Encode()
 
-	r, err := http.NewRequest(c.httpMethod, c.url.String(), strings.NewReader(params.Encode()))
+	r, err := http.NewRequest(c.httpMethod, c.url.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,27 +31,27 @@ func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) 
 	return r, nil
 }
 
-func (c *createEventClientTransport) DecodeResponse(r *http.Response) (types.Event, error) {
-	if r.StatusCode != http.StatusCreated {
-		return types.Event{}, c.errorTransport.DecodeError(r)
+func (c *eventsForDayClientTransport) DecodeResponse(r *http.Response) ([]types.Event, error) {
+	if r.StatusCode != http.StatusOK {
+		return nil, c.errorTransport.DecodeError(r)
 	}
 
 	var response types.EventResponse
 	jsonData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return types.Event{}, err
+		return nil, err
 	}
 	err = json.Unmarshal(jsonData, &response)
 	if err != nil {
-		return types.Event{}, err
+		return nil, err
 	}
-	return response.Result, nil
+	return nil, nil
 }
 
-func NewCreateEventClientTransport(
+func NewEventsForDayClientTransport(
 	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
-) CreateEventClientTransport {
-	return &createEventClientTransport{
+) EventsForDayClientTransport {
+	return &eventsForDayClientTransport{
 		url:            url,
 		path:           path,
 		httpMethod:     httpMethod,

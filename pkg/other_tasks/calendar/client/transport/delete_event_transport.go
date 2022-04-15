@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type createEventClientTransport struct {
+type deleteEventClientTransport struct {
 	url            *url.URL
 	path           string
 	httpMethod     string
@@ -18,7 +18,7 @@ type createEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
+func (c *deleteEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("name", data.Event.Name)
@@ -32,27 +32,27 @@ func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) 
 	return r, nil
 }
 
-func (c *createEventClientTransport) DecodeResponse(r *http.Response) (types.Event, error) {
-	if r.StatusCode != http.StatusCreated {
-		return types.Event{}, c.errorTransport.DecodeError(r)
+func (c *deleteEventClientTransport) DecodeResponse(r *http.Response) error {
+	if r.StatusCode != http.StatusNoContent {
+		return c.errorTransport.DecodeError(r)
 	}
 
 	var response types.EventResponse
 	jsonData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return types.Event{}, err
+		return err
 	}
 	err = json.Unmarshal(jsonData, &response)
 	if err != nil {
-		return types.Event{}, err
+		return err
 	}
-	return response.Result, nil
+	return nil
 }
 
-func NewCreateEventClientTransport(
+func NewDeleteEventClientTransport(
 	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
-) CreateEventClientTransport {
-	return &createEventClientTransport{
+) DeleteEventClientTransport {
+	return &deleteEventClientTransport{
 		url:            url,
 		path:           path,
 		httpMethod:     httpMethod,

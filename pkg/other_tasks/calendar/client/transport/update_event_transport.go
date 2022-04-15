@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type createEventClientTransport struct {
+type updateEventClientTransport struct {
 	url            *url.URL
 	path           string
 	httpMethod     string
@@ -18,7 +18,7 @@ type createEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
+func (c *updateEventClientTransport) EncodeRequest(data types.HandlerEventData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("name", data.Event.Name)
@@ -32,8 +32,8 @@ func (c *createEventClientTransport) EncodeRequest(data types.HandlerEventData) 
 	return r, nil
 }
 
-func (c *createEventClientTransport) DecodeResponse(r *http.Response) (types.Event, error) {
-	if r.StatusCode != http.StatusCreated {
+func (c *updateEventClientTransport) DecodeResponse(r *http.Response) (types.Event, error) {
+	if r.StatusCode != http.StatusOK {
 		return types.Event{}, c.errorTransport.DecodeError(r)
 	}
 
@@ -49,10 +49,10 @@ func (c *createEventClientTransport) DecodeResponse(r *http.Response) (types.Eve
 	return response.Result, nil
 }
 
-func NewCreateEventClientTransport(
+func NewUpdateEventClientTransport(
 	url *url.URL, path string, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
-) CreateEventClientTransport {
-	return &createEventClientTransport{
+) UpdateEventClientTransport {
+	return &updateEventClientTransport{
 		url:            url,
 		path:           path,
 		httpMethod:     httpMethod,
