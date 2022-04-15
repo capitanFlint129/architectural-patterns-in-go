@@ -14,16 +14,16 @@ type createEventHandler struct {
 
 func (c *createEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
-		createEventData types.CreateEventData
-		event           types.Event
-		err             error
+		data  types.HandlerEventData
+		event types.Event
+		err   error
 	)
 	if r.Method != http.MethodPost {
 		c.errorTransport.EncodeError(w, err, http.StatusMethodNotAllowed)
 		return
 	}
 
-	createEventData, err = c.transport.DecodeRequest(r)
+	data, err = c.transport.DecodeRequest(r)
 	if err != nil {
 		c.errorTransport.EncodeError(w, err, http.StatusBadRequest)
 		return
@@ -32,7 +32,7 @@ func (c *createEventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	mainCtx := context.Background()
 	ctx, cancel := context.WithCancel(mainCtx)
 	defer cancel()
-	event, err = c.calendar.CreateEvent(ctx, createEventData)
+	event, err = c.calendar.CreateEvent(ctx, data)
 	if err != nil {
 		c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
 		return

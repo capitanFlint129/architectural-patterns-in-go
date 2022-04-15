@@ -12,10 +12,10 @@ type loggingMiddleware struct {
 	logger        *logrus.Logger
 }
 
-func (l *loggingMiddleware) CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error) {
-	createdEvent, err := l.service.CreateEvent(ctx, createEventData)
+func (l *loggingMiddleware) CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error) {
+	createdEvent, err := l.service.CreateEvent(ctx, data)
 	l.logger.WithFields(logrus.Fields{
-		"user_id": createEventData.UserId,
+		"user_id": data.UserId,
 		"name":    createdEvent.Name,
 		"date":    createdEvent.Date.Format(l.logDateFormat),
 	}).Info()

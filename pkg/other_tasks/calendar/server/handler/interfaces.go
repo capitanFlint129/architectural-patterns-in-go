@@ -7,12 +7,12 @@ import (
 )
 
 type createEventTransport interface {
-	DecodeRequest(r *http.Request) (types.CreateEventData, error)
+	DecodeRequest(r *http.Request) (types.HandlerEventData, error)
 	EncodeResponse(w http.ResponseWriter, event types.Event) error
 }
 
 type updateEventTransport interface {
-	DecodeRequest(r *http.Request) (types.UpdateEventData, error)
+	DecodeRequest(r *http.Request) (types.HandlerEventData, error)
 	EncodeResponse(w http.ResponseWriter, event types.Event) error
 }
 
@@ -21,6 +21,6 @@ type errorTransport interface {
 }
 
 type service interface {
-	CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error)
-	UpdateEvent(ctx context.Context, updateEventData types.UpdateEventData) (types.Event, error)
+	CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error)
+	UpdateEvent(ctx context.Context, updateEventData types.HandlerEventData) (types.Event, error)
 }

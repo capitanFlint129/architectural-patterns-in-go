@@ -6,5 +6,5 @@ import (
 )
 
 type service interface {
-	CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error)
+	CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error)
 }

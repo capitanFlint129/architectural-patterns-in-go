@@ -7,7 +7,7 @@ import (
 )
 
 type CreateEventTransport interface {
-	DecodeRequest(r *http.Request) (types.CreateEventData, error)
+	DecodeRequest(r *http.Request) (types.HandlerEventData, error)
 	EncodeResponse(w http.ResponseWriter, event types.Event) error
 }
 

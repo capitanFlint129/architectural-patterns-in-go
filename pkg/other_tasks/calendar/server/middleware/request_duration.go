@@ -13,9 +13,9 @@ type requestDurationMiddleware struct {
 	requestDurationMetric prometheus.Histogram
 }
 
-func (r *requestDurationMiddleware) CreateEvent(ctx context.Context, createEventData types.CreateEventData) (types.Event, error) {
+func (r *requestDurationMiddleware) CreateEvent(ctx context.Context, data types.HandlerEventData) (types.Event, error) {
 	start := time.Now()
-	createdEvent, err := r.service.CreateEvent(ctx, createEventData)
+	createdEvent, err := r.service.CreateEvent(ctx, data)
 	time.Sleep(time.Duration(rand.Int()%5) * time.Second)
 	r.requestDurationMetric.Observe(time.Since(start).Seconds())
 	return createdEvent, err

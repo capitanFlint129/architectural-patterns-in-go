@@ -13,7 +13,7 @@ type createEventTransport struct {
 	dateFormat string
 }
 
-func (c *createEventTransport) DecodeRequest(r *http.Request) (types.CreateEventData, error) {
+func (c *createEventTransport) DecodeRequest(r *http.Request) (types.HandlerEventData, error) {
 	var (
 		userId    int
 		eventName string
@@ -22,14 +22,14 @@ func (c *createEventTransport) DecodeRequest(r *http.Request) (types.CreateEvent
 	)
 	userId, err = strconv.Atoi(r.FormValue("user_id"))
 	if err != nil {
-		return types.CreateEventData{}, err
+		return types.HandlerEventData{}, err
 	}
 	eventName = r.FormValue("name")
 	date, err = time.Parse(c.dateFormat, r.FormValue("date"))
 	if err != nil {
-		return types.CreateEventData{}, err
+		return types.HandlerEventData{}, err
 	}
-	return types.CreateEventData{
+	return types.HandlerEventData{
 		UserId: userId,
 		Event: types.Event{
 			Name: eventName,
@@ -39,7 +39,7 @@ func (c *createEventTransport) DecodeRequest(r *http.Request) (types.CreateEvent
 }
 
 func (c *createEventTransport) EncodeResponse(w http.ResponseWriter, event types.Event) error {
-	response := types.CreateEventResponse{
+	response := types.EventResponse{
 		Result: event,
 	}
 	jsonResponse, err := json.Marshal(response)
