@@ -48,9 +48,19 @@ func main() {
 	)
 	mux := http.NewServeMux()
 	createEventTransport := transport.NewCreateEventTransport(dateFormat)
+	updateEventTransport := transport.NewUpdateEventTransport(dateFormat)
+	deleteEventTransport := transport.NewDeleteEventTransport(dateFormat)
+	eventsForDayTransport := transport.NewEventsForDayTransport(dateFormat)
+	eventsForWeekTransport := transport.NewEventsForWeekTransport(dateFormat)
+	eventsForMonthTransport := transport.NewEventsForMonthTransport(dateFormat)
 	errorTransport := transport.NewErrorTransport()
 
 	mux.Handle(createEventPathPattern, handler.NewCreateEventHandler(createEventTransport, calendarService, errorTransport))
+	mux.Handle(updateEventPathPattern, handler.NewUpdateEventHandler(updateEventTransport, calendarService, errorTransport))
+	mux.Handle(deleteEventPathPattern, handler.NewDeleteEventHandler(deleteEventTransport, calendarService, errorTransport))
+	mux.Handle(eventsForDayPathPattern, handler.NewEventsForDayHandler(eventsForDayTransport, calendarService, errorTransport))
+	mux.Handle(eventsForWeekPathPattern, handler.NewEventsForWeekHandler(eventsForWeekTransport, calendarService, errorTransport))
+	mux.Handle(eventsForMonthPathPattern, handler.NewEventsForMonthHandler(eventsForMonthTransport, calendarService, errorTransport))
 	mux.Handle(prometheusPathPattern, promhttp.Handler())
 	calendarServer := http.Server{
 		Addr:    addr,
