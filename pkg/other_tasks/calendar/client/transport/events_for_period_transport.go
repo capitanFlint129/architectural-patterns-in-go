@@ -9,17 +9,18 @@ import (
 	"strconv"
 )
 
-type eventsForDayClientTransport struct {
+type eventsForPeriodClientTransport struct {
 	url            *url.URL
 	httpMethod     string
 	errorTransport ErrorClientTransport
 	dateFormat     string
 }
 
-func (c *eventsForDayClientTransport) EncodeRequest(data types.DateHandlerData) (*http.Request, error) {
+func (c *eventsForPeriodClientTransport) EncodeRequest(data types.DateIntervalHandlerData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
-	params.Set("date", data.Date.Format(c.dateFormat))
+	params.Set("start_date", data.StartDate.Format(c.dateFormat))
+	params.Set("end_date", data.EndDate.Format(c.dateFormat))
 	c.url.RawQuery = params.Encode()
 
 	r, err := http.NewRequest(c.httpMethod, c.url.String(), nil)
@@ -30,12 +31,11 @@ func (c *eventsForDayClientTransport) EncodeRequest(data types.DateHandlerData) 
 	return r, nil
 }
 
-func (c *eventsForDayClientTransport) DecodeResponse(r *http.Response) ([]types.Event, error) {
+func (c *eventsForPeriodClientTransport) DecodeResponse(r *http.Response) ([]types.Event, error) {
 	if r.StatusCode != http.StatusOK {
 		return nil, c.errorTransport.DecodeError(r)
 	}
-
-	var response types.EventResponse
+	var response types.EventsListResponse
 	jsonData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
@@ -44,13 +44,13 @@ func (c *eventsForDayClientTransport) DecodeResponse(r *http.Response) ([]types.
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return response.Result, nil
 }
 
-func NewEventsForDayClientTransport(
+func NewEventsForPeriodClientTransport(
 	url *url.URL, httpMethod string, errorTransport ErrorClientTransport, dateFormat string,
-) EventsForDayClientTransport {
-	return &eventsForDayClientTransport{
+) EventsForPeriodClientTransport {
+	return &eventsForPeriodClientTransport{
 		url:            url,
 		httpMethod:     httpMethod,
 		errorTransport: errorTransport,

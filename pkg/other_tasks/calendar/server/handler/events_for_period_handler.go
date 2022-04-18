@@ -6,19 +6,19 @@ import (
 	"net/http"
 )
 
-type eventsForWeekServer struct {
-	transport      eventsForWeekTransport
+type eventsForPeriodServer struct {
+	transport      eventsForPeriodTransport
 	calendar       service
 	errorTransport errorTransport
 }
 
-func (c *eventsForWeekServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *eventsForPeriodServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var (
-		data   types.DateHandlerData
+		data   types.DateIntervalHandlerData
 		events []types.Event
 		err    error
 	)
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
 		c.errorTransport.EncodeError(w, err, http.StatusMethodNotAllowed)
 		return
 	}
@@ -32,7 +32,7 @@ func (c *eventsForWeekServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	mainCtx := context.Background()
 	ctx, cancel := context.WithCancel(mainCtx)
 	defer cancel()
-	events, err = c.calendar.EventsForWeek(ctx, data)
+	events, err = c.calendar.EventsForPeriod(ctx, data)
 	if err != nil {
 		c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
 		return
@@ -44,8 +44,8 @@ func (c *eventsForWeekServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-func NewEventsForWeekServer(transport eventsForWeekTransport, calendar service, errorTransport errorTransport) http.Handler {
-	return &eventsForWeekServer{
+func NewEventsForPeriodServer(transport eventsForPeriodTransport, calendar service, errorTransport errorTransport) http.Handler {
+	return &eventsForPeriodServer{
 		transport:      transport,
 		calendar:       calendar,
 		errorTransport: errorTransport,
