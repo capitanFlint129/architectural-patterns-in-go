@@ -14,21 +14,14 @@ import (
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/server/transport"
 )
 
-// TODO обрабатывать обязательные и необязательные поля, их формат, допустимые значения и прочее
-
 const (
 	dateFormat = "2006-01-02"
 
 	addr = ":8080"
 
-	createEventPathPattern    = "/create_event"
-	updateEventPathPattern    = "/update_event"
-	deleteEventPathPattern    = "/delete_event"
-	eventsForDayPathPattern   = "/event_for_day"
-	eventsForWeekPathPattern  = "/event_for_week"
-	eventsForMonthPathPattern = "/event_for_month"
-
-	prometheusPathPattern = "/metrics"
+	eventPathPattern           = "/event"
+	eventsForPeriodPathPattern = "/events_for_period"
+	prometheusPathPattern      = "/metrics"
 )
 
 func main() {
@@ -50,17 +43,17 @@ func main() {
 	createEventTransport := transport.NewCreateEventTransport(dateFormat)
 	updateEventTransport := transport.NewUpdateEventTransport(dateFormat)
 	deleteEventTransport := transport.NewDeleteEventTransport(dateFormat)
-	eventsForDayTransport := transport.NewEventsForDayTransport(dateFormat)
-	eventsForWeekTransport := transport.NewEventsForWeekTransport(dateFormat)
-	eventsForMonthTransport := transport.NewEventsForMonthTransport(dateFormat)
+	eventsForPeriodTransport := transport.NewEventsForPeriodTransport(dateFormat)
 	errorTransport := transport.NewErrorTransport()
 
-	mux.Handle(createEventPathPattern, handler.NewCreateEventServer(createEventTransport, calendarService, errorTransport))
-	mux.Handle(updateEventPathPattern, handler.NewUpdateEventServer(updateEventTransport, calendarService, errorTransport))
-	mux.Handle(deleteEventPathPattern, handler.NewDeleteEventServer(deleteEventTransport, calendarService, errorTransport))
-	mux.Handle(eventsForDayPathPattern, handler.NewEventsForDayServer(eventsForDayTransport, calendarService, errorTransport))
-	mux.Handle(eventsForWeekPathPattern, handler.NewEventsForWeekServer(eventsForWeekTransport, calendarService, errorTransport))
-	mux.Handle(eventsForMonthPathPattern, handler.NewEventsForMonthServer(eventsForMonthTransport, calendarService, errorTransport))
+	mux.Handle(eventPathPattern, handler.NewCreateEventServer(
+		createEventTransport,
+		updateEventTransport,
+		deleteEventTransport,
+		calendarService,
+		errorTransport,
+	))
+	mux.Handle(eventsForPeriodPathPattern, handler.NewEventsForPeriodServer(eventsForPeriodTransport, calendarService, errorTransport))
 	mux.Handle(prometheusPathPattern, promhttp.Handler())
 	calendarServer := http.Server{
 		Addr:    addr,
