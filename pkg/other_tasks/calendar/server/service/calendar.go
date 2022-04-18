@@ -7,11 +7,9 @@ import (
 
 type Service interface {
 	CreateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error)
-	UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error)
+	UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) (types.Event, error)
 	DeleteEvent(ctx context.Context, data types.EventHandlerData) error
-	EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
-	EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
-	EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error)
+	EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) ([]types.Event, error)
 }
 
 type calendar struct {
@@ -19,17 +17,24 @@ type calendar struct {
 }
 
 func (c *calendar) CreateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
+	_, ok := c.events[data.UserId]
+	if !ok {
+		c.events[data.UserId] = make(map[string]types.Event)
+	}
 	c.events[data.UserId][data.Event.Name] = data.Event
 	return data.Event, nil
 }
 
-func (c *calendar) UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
+func (c *calendar) UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) (types.Event, error) {
 	_, ok := c.events[data.UserId][data.Event.Name]
 	if !ok {
 		return types.Event{}, types.ErrorEventNotFound
 	}
-	c.events[data.UserId][data.Event.Name] = data.Event
-	return data.Event, nil
+	if data.Event.Name != data.NewEvent.Name {
+		delete(c.events[data.UserId], data.Event.Name)
+	}
+	c.events[data.UserId][data.NewEvent.Name] = data.NewEvent
+	return data.NewEvent, nil
 }
 
 func (c *calendar) DeleteEvent(ctx context.Context, data types.EventHandlerData) error {
@@ -41,40 +46,14 @@ func (c *calendar) DeleteEvent(ctx context.Context, data types.EventHandlerData)
 	return nil
 }
 
-func (c *calendar) EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	eventsForDay := make([]types.Event, 0)
+func (c *calendar) EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) ([]types.Event, error) {
+	eventsForPeriod := make([]types.Event, 0)
 	for _, event := range c.events[data.UserId] {
-		y1, m1, d1 := data.Date.Date()
-		y2, m2, d2 := event.Date.Date()
-		if y1 == y2 && m1 == m2 && d1 == d2 {
-			eventsForDay = append(eventsForDay, event)
+		if event.Date.After(data.StartDate) && event.Date.Before(data.EndDate) {
+			eventsForPeriod = append(eventsForPeriod, event)
 		}
 	}
-	return eventsForDay, nil
-}
-
-func (c *calendar) EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	eventsForDay := make([]types.Event, 0)
-	endOfWeek := data.Date.AddDate(0, 0, 7)
-	for _, event := range c.events[data.UserId] {
-		if event.Date.After(data.Date) && event.Date.Before(endOfWeek) {
-			eventsForDay = append(eventsForDay, event)
-		}
-	}
-	return eventsForDay, nil
-}
-
-func (c *calendar) EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	eventsForMonth := make([]types.Event, 0)
-	year, month, _ := data.Date.Date()
-	for _, event := range c.events[data.UserId] {
-		eventYear, eventMonth, _ := event.Date.Date()
-		if eventYear == year && eventMonth == month {
-			eventsForMonth = append(eventsForMonth, event)
-		}
-	}
-	return eventsForMonth, nil
-
+	return eventsForPeriod, nil
 }
 
 func NewCalendar() Service {
