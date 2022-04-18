@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"net/http"
+	"time"
 )
 
 type eventServer struct {
@@ -15,12 +16,18 @@ type eventServer struct {
 }
 
 func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	mainCtx := r.Context()
+	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
+	r = r.WithContext(ctx)
+	defer cancel()
+
 	switch r.Method {
 	case http.MethodPost:
 		var (
 			data  types.EventHandlerData
 			event types.Event
-			err   error
 		)
 
 		data, err = c.createEventTransport.DecodeRequest(r)
@@ -29,10 +36,7 @@ func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		mainCtx := context.Background()
-		ctx, cancel := context.WithCancel(mainCtx)
-		defer cancel()
-		event, err = c.calendar.CreateEvent(ctx, data)
+		event, err = c.calendar.CreateEvent(r.Context(), data)
 		if err != nil {
 			c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
 			return
@@ -46,7 +50,6 @@ func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var (
 			data  types.UpdateEventHandlerData
 			event types.Event
-			err   error
 		)
 
 		data, err = c.updateEventTransport.DecodeRequest(r)
@@ -54,12 +57,13 @@ func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			c.errorTransport.EncodeError(w, err, http.StatusBadRequest)
 			return
 		}
-
-		mainCtx := context.Background()
-		ctx, cancel := context.WithCancel(mainCtx)
-		defer cancel()
-		event, err = c.calendar.UpdateEvent(ctx, data)
-		if err != nil {
+		event, err = c.calendar.UpdateEvent(r.Context(), data)
+		switch err {
+		case nil:
+		case types.ErrorEventNotFound:
+			c.errorTransport.EncodeError(w, err, http.StatusNotFound)
+			return
+		default:
 			c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
 			return
 		}
@@ -71,7 +75,6 @@ func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		var (
 			data types.EventHandlerData
-			err  error
 		)
 
 		data, err = c.deleteEventTransport.DecodeRequest(r)
@@ -79,11 +82,7 @@ func (c *eventServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			c.errorTransport.EncodeError(w, err, http.StatusBadRequest)
 			return
 		}
-
-		mainCtx := context.Background()
-		ctx, cancel := context.WithCancel(mainCtx)
-		defer cancel()
-		err = c.calendar.DeleteEvent(ctx, data)
+		err = c.calendar.DeleteEvent(r.Context(), data)
 		switch err {
 		case nil:
 		case types.ErrorEventNotFound:

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"net/http"
+	"time"
 )
 
 type eventsForPeriodServer struct {
@@ -18,28 +19,30 @@ func (c *eventsForPeriodServer) ServeHTTP(w http.ResponseWriter, r *http.Request
 		events []types.Event
 		err    error
 	)
-	if r.Method != http.MethodGet {
-		c.errorTransport.EncodeError(w, err, http.StatusMethodNotAllowed)
-		return
-	}
 
-	data, err = c.transport.DecodeRequest(r)
-	if err != nil {
-		c.errorTransport.EncodeError(w, err, http.StatusBadRequest)
-		return
-	}
-
-	mainCtx := context.Background()
-	ctx, cancel := context.WithCancel(mainCtx)
+	mainCtx := r.Context()
+	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
+	r = r.WithContext(ctx)
 	defer cancel()
-	events, err = c.calendar.EventsForPeriod(ctx, data)
-	if err != nil {
-		c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
-		return
-	}
 
-	if err = c.transport.EncodeResponse(w, events); err != nil {
-		c.errorTransport.EncodeError(w, err, http.StatusInternalServerError)
+	switch r.Method {
+	case http.MethodGet:
+		data, err = c.transport.DecodeRequest(r)
+		if err != nil {
+			c.errorTransport.EncodeError(w, err, http.StatusBadRequest)
+			return
+		}
+		events, err = c.calendar.EventsForPeriod(r.Context(), data)
+		if err != nil {
+			c.errorTransport.EncodeError(w, err, http.StatusServiceUnavailable)
+			return
+		}
+		if err = c.transport.EncodeResponse(w, events); err != nil {
+			c.errorTransport.EncodeError(w, err, http.StatusInternalServerError)
+			return
+		}
+	default:
+		c.errorTransport.EncodeError(w, err, http.StatusMethodNotAllowed)
 		return
 	}
 }
