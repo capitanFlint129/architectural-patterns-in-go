@@ -9,31 +9,6 @@ import (
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 )
 
-func getEventHandlerDataFromRequest(r *http.Request, dateFormat string) (types.EventHandlerData, error) {
-	var (
-		userId    int
-		eventName string
-		date      time.Time
-		err       error
-	)
-	userId, err = strconv.Atoi(r.FormValue("user_id"))
-	if err != nil {
-		return types.EventHandlerData{}, err
-	}
-	eventName = r.FormValue("name")
-	date, err = time.Parse(dateFormat, r.FormValue("date"))
-	if err != nil {
-		return types.EventHandlerData{}, err
-	}
-	return types.EventHandlerData{
-		UserId: userId,
-		Event: types.Event{
-			Name: eventName,
-			Date: date,
-		},
-	}, nil
-}
-
 func encodeEventResponse(w http.ResponseWriter, event types.Event, statusCode int) error {
 	response := types.EventResponse{
 		Result: event,
@@ -51,23 +26,29 @@ func encodeEventResponse(w http.ResponseWriter, event types.Event, statusCode in
 	return nil
 }
 
-func getDateHandlerDataFromRequest(r *http.Request, dateFormat string) (types.DateHandlerData, error) {
+func getDateIntervalHandlerDataFromRequest(r *http.Request, dateFormat string) (types.DateIntervalHandlerData, error) {
 	var (
-		userId int
-		date   time.Time
-		err    error
+		userId    int
+		startDate time.Time
+		endDate   time.Time
+		err       error
 	)
 	userId, err = strconv.Atoi(r.FormValue("user_id"))
 	if err != nil {
-		return types.DateHandlerData{}, err
+		return types.DateIntervalHandlerData{}, err
 	}
-	date, err = time.Parse(dateFormat, r.FormValue("date"))
+	startDate, err = time.Parse(dateFormat, r.FormValue("start_date"))
 	if err != nil {
-		return types.DateHandlerData{}, err
+		return types.DateIntervalHandlerData{}, err
 	}
-	return types.DateHandlerData{
-		UserId: userId,
-		Date:   date,
+	endDate, err = time.Parse(dateFormat, r.FormValue("end_date"))
+	if err != nil {
+		return types.DateIntervalHandlerData{}, err
+	}
+	return types.DateIntervalHandlerData{
+		UserId:    userId,
+		StartDate: startDate,
+		EndDate:   endDate,
 	}, nil
 }
 
