@@ -3,18 +3,17 @@
 
 
 interface Service {
-	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
-	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.EventHandlerData) : error
+	+EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) : ([]types.Event, error)
 }
 
 class loggingMiddleware {
     -service: Service
     -logger: *logrus.Logger
-    +CreateEvent(ctx context.Context, data types.CreateEventData) : (types.Event, error)
+    -logDateFormat: string
+    +CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
 }
 
 class loggingMiddleware implements Service
@@ -23,7 +22,8 @@ loggingMiddleware o--> Service
 
 class requestDurationMiddleware {
     -service: Service
-    +CreateEvent(ctx context.Context, data types.CreateEventData) : (types.Event, error)
+    -requestDurationMetric: *prometheus.HistogramVec
+    +CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
 }
 
 class requestDurationMiddleware implements Service
