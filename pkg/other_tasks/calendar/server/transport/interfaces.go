@@ -12,7 +12,7 @@ type CreateEventTransport interface {
 }
 
 type UpdateEventTransport interface {
-	DecodeRequest(r *http.Request) (types.EventHandlerData, error)
+	DecodeRequest(r *http.Request) (types.UpdateEventHandlerData, error)
 	EncodeResponse(w http.ResponseWriter, event types.Event) error
 }
 
@@ -21,18 +21,8 @@ type DeleteEventTransport interface {
 	EncodeResponse(w http.ResponseWriter) error
 }
 
-type EventsForDayTransport interface {
-	DecodeRequest(r *http.Request) (types.DateHandlerData, error)
-	EncodeResponse(w http.ResponseWriter, events []types.Event) error
-}
-
-type EventsForWeekTransport interface {
-	DecodeRequest(r *http.Request) (types.DateHandlerData, error)
-	EncodeResponse(w http.ResponseWriter, events []types.Event) error
-}
-
-type EventsForMonthTransport interface {
-	DecodeRequest(r *http.Request) (types.DateHandlerData, error)
+type EventsForPeriodTransport interface {
+	DecodeRequest(r *http.Request) (types.DateIntervalHandlerData, error)
 	EncodeResponse(w http.ResponseWriter, events []types.Event) error
 }
 
