@@ -3,5 +3,6 @@ package types
 import "errors"
 
 var (
-	ErrorEventNotFound = errors.New("error not found")
+	ErrorMethodNotAllowed = errors.New("method not allowed")
+	ErrorEventNotFound    = errors.New("error not found")
 )
