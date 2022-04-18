@@ -4,41 +4,29 @@
 ' Interfaces
 
 interface Service {
-	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
-	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.EventHandlerData) : error
+	+EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) : ([]types.Event, error)
 }
 
 interface CreateEventClientTransport {
-	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) (types.Event, error)
 }
 
 interface UpdateEventClientTransport {
-	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+EncodeRequest(data types.UpdateEventHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) (types.Event, error)
 }
 
 interface DeleteEventClientTransport {
-	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) error
 }
 
-interface EventsForDayClientTransport {
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
-	+DecodeResponse(r *http.Response) ([]types.Event, error)
-}
-
-interface EventsForWeekClientTransport {
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
-	+DecodeResponse(r *http.Response) ([]types.Event, error)
-}
-
-interface EventsForMonthClientTransport {
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+interface EventsForPeriodClientTransport {
+	+EncodeRequest(data types.DateIntervalHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) ([]types.Event, error)
 }
 
@@ -52,16 +40,12 @@ class client {
     -createEventClientTransport:    CreateEventClientTransport
     -updateEventClientTransport:    UpdateEventClientTransport
     -deleteEventClientTransport:    DeleteEventClientTransport
-    -eventsForDayClientTransport:  EventsForDayClientTransport
-    -eventsForWeekClientTransport:  EventsForWeekClientTransport
-    -eventsForMonthClientTransport: EventsForMonthClientTransport
+    -eventsForPeriodClientTransport: EventsForPeriodClientTransport
 
-	+CreateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+UpdateEvent(ctx context.Context, data types.HandlerEventData) : (types.Event, error)
-	+DeleteEvent(ctx context.Context, data types.HandlerEventData) : error
-	+EventsForDay(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForWeek(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
-	+EventsForMonth(ctx context.Context, data types.HandlerDateData) : ([]types.Event, error)
+	+CreateEvent(ctx context.Context, data types.EventHandlerData) : (types.Event, error)
+	+UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) : (types.Event, error)
+	+DeleteEvent(ctx context.Context, data types.EventHandlerData) : error
+	+EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) : ([]types.Event, error)
 }
 
 class createEventClientTransport {
@@ -71,7 +55,7 @@ class createEventClientTransport {
     -errorTransport: ErrorClientTransport
     -dateFormat: string
 
-    +EncodeRequest(data types.CreateEventData) : (*http.Request, error)
+    +EncodeRequest(data types.EventHandlerData) : (*http.Request, error)
     +DecodeResponse(r *http.Response) : (types.Event, error)
 }
 
@@ -82,7 +66,7 @@ class updateEventClientTransport {
     -errorTransport: ErrorClientTransport
     -dateFormat: string
 
-    +EncodeRequest(data types.CreateEventData) : (*http.Request, error)
+    +EncodeRequest(data types.UpdateEventHandlerData) : (*http.Request, error)
     +DecodeResponse(r *http.Response) : (types.Event, error)
 }
 
@@ -93,40 +77,18 @@ class deleteEventClientTransport {
     -errorTransport: ErrorClientTransport
     -dateFormat: string
 
-	+EncodeRequest(data types.HandlerEventData) (*http.Request, error)
+	+EncodeRequest(data types.EventHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) error
 }
 
-class eventsForDayClientTransport {
+class eventsForPeriodClientTransport {
     -url: *url.URL
     -path: string
     -httpMethod: string
     -errorTransport: ErrorClientTransport
     -dateFormat: string
 
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
-	+DecodeResponse(r *http.Response) ([]types.Event, error)
-}
-
-class eventsForWeekClientTransport {
-    -url: *url.URL
-    -path: string
-    -httpMethod: string
-    -errorTransport: ErrorClientTransport
-    -dateFormat: string
-
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
-	+DecodeResponse(r *http.Response) ([]types.Event, error)
-}
-
-class eventsForMonthClientTransport {
-    -url: *url.URL
-    -path: string
-    -httpMethod: string
-    -errorTransport: ErrorClientTransport
-    -dateFormat: string
-
-	+EncodeRequest(data types.HandlerDateData) (*http.Request, error)
+	+EncodeRequest(data types.DateIntervalHandlerData) (*http.Request, error)
 	+DecodeResponse(r *http.Response) ([]types.Event, error)
 }
 
@@ -140,24 +102,18 @@ class client implements Service
 class createEventClientTransport implements CreateEventClientTransport
 class updateEventClientTransport implements UpdateEventClientTransport
 class deleteEventClientTransport implements DeleteEventClientTransport
-class eventsForDayClientTransport implements EventsForDayClientTransport
-class eventsForWeekClientTransport implements EventsForWeekClientTransport
-class eventsForMonthClientTransport implements EventsForMonthClientTransport
+class eventsForPeriodClientTransport implements EventsForPeriodClientTransport
 class errorClientTransport implements ErrorClientTransport
 
 
 client o--> CreateEventClientTransport
 client o--> UpdateEventClientTransport
 client o--> DeleteEventClientTransport
-client o--> EventsForDayClientTransport
-client o--> EventsForWeekClientTransport
-client o--> EventsForMonthClientTransport
+client o--> EventsForPeriodClientTransport
 
 createEventClientTransport o--> ErrorClientTransport
 updateEventClientTransport o--> ErrorClientTransport
 deleteEventClientTransport o--> ErrorClientTransport
-eventsForDayClientTransport o--> ErrorClientTransport
-eventsForWeekClientTransport o--> ErrorClientTransport
-eventsForMonthClientTransport o--> ErrorClientTransport
+eventsForPeriodClientTransport o--> ErrorClientTransport
 
 @enduml
