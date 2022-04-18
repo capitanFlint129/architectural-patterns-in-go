@@ -7,12 +7,10 @@ import (
 )
 
 const (
-	createEventHandlerName    = "create event"
-	updateEventHandlerName    = "update event"
-	deleteEventHandlerName    = "delete event"
-	eventsForDayHandlerName   = "events for day"
-	eventsForWeekHandlerName  = "events for week"
-	eventsForMonthHandlerName = "events for month"
+	createEventHandlerName     = "create event"
+	updateEventHandlerName     = "update event"
+	deleteEventHandlerName     = "delete event"
+	eventsForPeriodHandlerName = "events for period"
 )
 
 type loggingMiddleware struct {
@@ -26,8 +24,8 @@ func (l *loggingMiddleware) CreateEvent(ctx context.Context, data types.EventHan
 	return l.service.CreateEvent(ctx, data)
 }
 
-func (l *loggingMiddleware) UpdateEvent(ctx context.Context, data types.EventHandlerData) (types.Event, error) {
-	l.logEventHandlerData(updateEventHandlerName, data)
+func (l *loggingMiddleware) UpdateEvent(ctx context.Context, data types.UpdateEventHandlerData) (types.Event, error) {
+	l.logUpdateEventHandlerData(updateEventHandlerName, data)
 	return l.service.UpdateEvent(ctx, data)
 }
 
@@ -36,19 +34,9 @@ func (l *loggingMiddleware) DeleteEvent(ctx context.Context, data types.EventHan
 	return l.service.DeleteEvent(ctx, data)
 }
 
-func (l *loggingMiddleware) EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	l.logDateHandlerData(eventsForDayHandlerName, data)
-	return l.service.EventsForDay(ctx, data)
-}
-
-func (l *loggingMiddleware) EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	l.logDateHandlerData(eventsForWeekHandlerName, data)
-	return l.service.EventsForWeek(ctx, data)
-}
-
-func (l *loggingMiddleware) EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	l.logDateHandlerData(eventsForMonthHandlerName, data)
-	return l.service.EventsForMonth(ctx, data)
+func (l *loggingMiddleware) EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) ([]types.Event, error) {
+	l.logDateIntervalHandlerData(eventsForPeriodHandlerName, data)
+	return l.service.EventsForPeriod(ctx, data)
 }
 
 func (l *loggingMiddleware) logEventHandlerData(handlerName string, data types.EventHandlerData) {
@@ -60,11 +48,23 @@ func (l *loggingMiddleware) logEventHandlerData(handlerName string, data types.E
 	}).Info()
 }
 
-func (l *loggingMiddleware) logDateHandlerData(handlerName string, data types.DateHandlerData) {
+func (l *loggingMiddleware) logUpdateEventHandlerData(handlerName string, data types.UpdateEventHandlerData) {
 	l.logger.WithFields(logrus.Fields{
 		"handler_name": handlerName,
 		"user_id":      data.UserId,
-		"date":         data.Date.Format(l.logDateFormat),
+		"name":         data.Event.Name,
+		"date":         data.Event.Date.Format(l.logDateFormat),
+		"new_name":     data.NewEvent.Name,
+		"new_date":     data.NewEvent.Date.Format(l.logDateFormat),
+	}).Info()
+}
+
+func (l *loggingMiddleware) logDateIntervalHandlerData(handlerName string, data types.DateIntervalHandlerData) {
+	l.logger.WithFields(logrus.Fields{
+		"handler_name": handlerName,
+		"user_id":      data.UserId,
+		"start_date":   data.StartDate.Format(l.logDateFormat),
+		"end_date":     data.EndDate.Format(l.logDateFormat),
 	}).Info()
 }
 

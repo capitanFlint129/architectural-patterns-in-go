@@ -8,12 +8,10 @@ import (
 )
 
 const (
-	createEventRequestDurationMetricLabel    = "create_event"
-	updateEventRequestDurationMetricLabel    = "update_event"
-	deleteEventRequestDurationMetricLabel    = "delete_event"
-	eventsForDayRequestDurationMetricLabel   = "event_for_day"
-	eventsForWeekRequestDurationMetricLabel  = "event_for_week"
-	eventsForMonthRequestDurationMetricLabel = "event_for_month"
+	createEventRequestDurationMetricLabel     = "create_event"
+	updateEventRequestDurationMetricLabel     = "update_event"
+	deleteEventRequestDurationMetricLabel     = "delete_event"
+	eventsForPeriodRequestDurationMetricLabel = "event_for_month"
 )
 
 type requestDurationMiddleware struct {
@@ -39,22 +37,10 @@ func (r *requestDurationMiddleware) DeleteEvent(ctx context.Context, data types.
 	return r.service.DeleteEvent(ctx, data)
 }
 
-func (r *requestDurationMiddleware) EventsForDay(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
+func (r *requestDurationMiddleware) EventsForPeriod(ctx context.Context, data types.DateIntervalHandlerData) ([]types.Event, error) {
 	start := time.Now()
-	defer r.requestDurationMetric.WithLabelValues(eventsForDayRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
-	return r.service.EventsForDay(ctx, data)
-}
-
-func (r *requestDurationMiddleware) EventsForWeek(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	start := time.Now()
-	defer r.requestDurationMetric.WithLabelValues(eventsForWeekRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
-	return r.service.EventsForWeek(ctx, data)
-}
-
-func (r *requestDurationMiddleware) EventsForMonth(ctx context.Context, data types.DateHandlerData) ([]types.Event, error) {
-	start := time.Now()
-	defer r.requestDurationMetric.WithLabelValues(eventsForMonthRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
-	return r.service.EventsForMonth(ctx, data)
+	defer r.requestDurationMetric.WithLabelValues(eventsForPeriodRequestDurationMetricLabel).Observe(time.Since(start).Seconds())
+	return r.service.EventsForPeriod(ctx, data)
 }
 
 func NewRequestDurationMiddleware(
