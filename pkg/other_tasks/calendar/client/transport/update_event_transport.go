@@ -17,11 +17,13 @@ type updateEventClientTransport struct {
 	dateFormat     string
 }
 
-func (c *updateEventClientTransport) EncodeRequest(data types.EventHandlerData) (*http.Request, error) {
+func (c *updateEventClientTransport) EncodeRequest(data types.UpdateEventHandlerData) (*http.Request, error) {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(data.UserId))
 	params.Set("name", data.Event.Name)
 	params.Set("date", data.Event.Date.Format(c.dateFormat))
+	params.Set("new_name", data.NewEvent.Name)
+	params.Set("new_date", data.NewEvent.Date.Format(c.dateFormat))
 
 	r, err := http.NewRequest(c.httpMethod, c.url.String(), strings.NewReader(params.Encode()))
 	if err != nil {
