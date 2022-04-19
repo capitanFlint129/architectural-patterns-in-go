@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Glyph {
+    +Draw(glyphContext GlyphContext)
+}
+
+' concrete shared flyweight
+class character {
+    ' intrinsic state
+    -code: int
+    +Draw(glyphContext GlyphContext)
+}
+class character implements Glyph
+
+' concrete unshared flyweightS
+'class line {
+'    +Draw(glyphContext GlyphContext)
+'}
+
+'class line implements Glyph
+
+interface GlyphFactory {
+    +GetCharacter(code int) : Glyph
+}
+
+class glyphFactory {
+    -characters: []Glyph
+    +GetCharacter(code int) : Glyph
+}
+class glyphFactory implements GlyphFactory
+
+glyphFactory o--> Glyph
+
+
+interface GlyphContext {
+    +GetFont() : string
+}
+
+class glyphContext {
+    -fonts: []string
+    -currentPosition int
+    +GetFont() : string
+}
+class glyphContext implements GlyphContext
+
+Glyph ..> GlyphContext
+
+
+@enduml
