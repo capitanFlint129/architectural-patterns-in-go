@@ -1,10 +1,9 @@
 package handler
 
 import (
-	"context"
-	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"net/http"
-	"time"
+
+	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 )
 
 type eventsForPeriodServer struct {
@@ -19,12 +18,6 @@ func (c *eventsForPeriodServer) ServeHTTP(w http.ResponseWriter, r *http.Request
 		events []types.Event
 		err    error
 	)
-
-	mainCtx := r.Context()
-	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
-	r = r.WithContext(ctx)
-	defer cancel()
-
 	switch r.Method {
 	case http.MethodGet:
 		data, err = c.transport.DecodeRequest(r)

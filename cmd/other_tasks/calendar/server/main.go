@@ -46,7 +46,7 @@ func main() {
 	eventsForPeriodTransport := transport.NewEventsForPeriodTransport(dateFormat)
 	errorTransport := transport.NewErrorTransport()
 
-	mux.Handle(eventPathPattern, handler.NewCreateEventServer(
+	mux.Handle(eventPathPattern, handler.NewEventServer(
 		createEventTransport,
 		updateEventTransport,
 		deleteEventTransport,
