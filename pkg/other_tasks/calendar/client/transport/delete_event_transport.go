@@ -1,10 +1,11 @@
 package transport
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"net/http"
 	"net/url"
-	"strconv"
 )
 
 type deleteEventClientTransport struct {
@@ -15,18 +16,17 @@ type deleteEventClientTransport struct {
 }
 
 func (c *deleteEventClientTransport) EncodeRequest(data types.EventHandlerData) (*http.Request, error) {
-	params := url.Values{}
-	params.Set("user_id", strconv.Itoa(data.UserId))
-	params.Set("name", data.Event.Name)
-	params.Set("date", data.Event.Date.Format(c.dateFormat))
-	c.url.RawQuery = params.Encode()
-
-	r, err := http.NewRequest(c.httpMethod, c.url.String(), nil)
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	r, err := http.NewRequest(c.httpMethod, c.url.String(), bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	return r, nil
+
 }
 
 func (c *deleteEventClientTransport) DecodeResponse(r *http.Response) error {

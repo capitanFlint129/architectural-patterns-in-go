@@ -1,13 +1,12 @@
 package transport
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 )
 
 type updateEventClientTransport struct {
@@ -18,14 +17,11 @@ type updateEventClientTransport struct {
 }
 
 func (c *updateEventClientTransport) EncodeRequest(data types.UpdateEventHandlerData) (*http.Request, error) {
-	params := url.Values{}
-	params.Set("user_id", strconv.Itoa(data.UserId))
-	params.Set("name", data.Event.Name)
-	params.Set("date", data.Event.Date.Format(c.dateFormat))
-	params.Set("new_name", data.NewEvent.Name)
-	params.Set("new_date", data.NewEvent.Date.Format(c.dateFormat))
-
-	r, err := http.NewRequest(c.httpMethod, c.url.String(), strings.NewReader(params.Encode()))
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	r, err := http.NewRequest(c.httpMethod, c.url.String(), bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}

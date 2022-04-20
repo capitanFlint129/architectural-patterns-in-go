@@ -1,12 +1,12 @@
 package transport
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 )
 
 type eventsForPeriodClientTransport struct {
@@ -17,13 +17,11 @@ type eventsForPeriodClientTransport struct {
 }
 
 func (c *eventsForPeriodClientTransport) EncodeRequest(data types.DateIntervalHandlerData) (*http.Request, error) {
-	params := url.Values{}
-	params.Set("user_id", strconv.Itoa(data.UserId))
-	params.Set("start_date", data.StartDate.Format(c.dateFormat))
-	params.Set("end_date", data.EndDate.Format(c.dateFormat))
-	c.url.RawQuery = params.Encode()
-
-	r, err := http.NewRequest(c.httpMethod, c.url.String(), nil)
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+	r, err := http.NewRequest(c.httpMethod, c.url.String(), bytes.NewReader(jsonData))
 	if err != nil {
 		return nil, err
 	}

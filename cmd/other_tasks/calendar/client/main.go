@@ -66,61 +66,61 @@ func main() {
 	mainCtx := context.Background()
 	ctx, cancel := context.WithCancel(mainCtx)
 	defer cancel()
-	//var event types.Event
+	var event types.Event
 	var err error
 	date := time.Now()
 
-	//// create event
-	//event, err = calendarClient.CreateEvent(
-	//	ctx,
-	//	types.EventHandlerData{
-	//		UserId: 0,
-	//		Event: types.Event{
-	//			Name: "event1",
-	//			Date: date,
-	//		},
-	//	})
-	//if err != nil {
-	//	logger.Error(err)
-	//} else {
-	//	logger.Info(event)
-	//}
-	//
-	//// update event
-	//event, err = calendarClient.UpdateEvent(
-	//	ctx,
-	//	types.UpdateEventHandlerData{
-	//		UserId: 0,
-	//		Event: types.Event{
-	//			Name: "event1",
-	//			Date: date,
-	//		},
-	//		NewEvent: types.Event{
-	//			Name: "event2",
-	//			Date: date.AddDate(0, 0, -1),
-	//		},
-	//	})
-	//if err != nil {
-	//	logger.Error(err)
-	//} else {
-	//	logger.Info(event)
-	//}
-	//
-	//// delete event
-	//err = calendarClient.DeleteEvent(
-	//	ctx,
-	//	types.EventHandlerData{
-	//		UserId: 0,
-	//		Event: types.Event{
-	//			Name: "event2",
-	//			Date: date.AddDate(0, 0, -1),
-	//		},
-	//	})
-	//if err != nil {
-	//	logger.Error(err)
-	//} else {
-	//	logger.Info(event)
-	//}
+	// create event
+	event, err = calendarClient.CreateEvent(
+		ctx,
+		types.EventHandlerData{
+			UserId: 0,
+			Event: types.Event{
+				Name: "event1",
+				Date: date,
+			},
+		})
+	if err != nil {
+		logger.Error(err)
+	} else {
+		logger.Info(event)
+	}
+
+	// update event
+	event, err = calendarClient.UpdateEvent(
+		ctx,
+		types.UpdateEventHandlerData{
+			UserId: 0,
+			Event: types.Event{
+				Name: "event1",
+				Date: date,
+			},
+			NewEvent: types.Event{
+				Name: "event2",
+				Date: date.AddDate(0, 0, -1),
+			},
+		})
+	if err != nil {
+		logger.Error(err)
+	} else {
+		logger.Info(event)
+	}
+
+	// delete event
+	err = calendarClient.DeleteEvent(
+		ctx,
+		types.EventHandlerData{
+			UserId: 0,
+			Event: types.Event{
+				Name: "event2",
+				Date: date.AddDate(0, 0, -1),
+			},
+		})
+	if err != nil {
+		logger.Error(err)
+	} else {
+		logger.Info(event)
+	}
 
 	var events []types.Event
 	date = time.Date(2022, 1, 15, 0, 0, 0, 0, date.Location())

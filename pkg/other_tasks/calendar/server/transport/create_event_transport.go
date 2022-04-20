@@ -1,10 +1,9 @@
 package transport
 
 import (
+	"encoding/json"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 	"net/http"
-	"strconv"
-	"time"
 )
 
 type createEventTransport struct {
@@ -13,31 +12,35 @@ type createEventTransport struct {
 
 func (c *createEventTransport) DecodeRequest(r *http.Request) (types.EventHandlerData, error) {
 	var (
-		userId    int
-		eventName string
-		date      time.Time
-		err       error
+		data types.EventHandlerData
+		err  error
 	)
-	userId, err = strconv.Atoi(r.FormValue("user_id"))
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&data)
 	if err != nil {
 		return types.EventHandlerData{}, err
 	}
-	eventName = r.FormValue("name")
-	date, err = time.Parse(c.dateFormat, r.FormValue("date"))
 	if err != nil {
 		return types.EventHandlerData{}, err
 	}
-	return types.EventHandlerData{
-		UserId: userId,
-		Event: types.Event{
-			Name: eventName,
-			Date: date,
-		},
-	}, nil
+	return data, nil
 }
 
 func (c *createEventTransport) EncodeResponse(w http.ResponseWriter, event types.Event) error {
-	return encodeEventResponse(w, event, http.StatusCreated)
+	response := types.EventResponse{
+		Result: event,
+	}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		return err
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(jsonResponse)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewCreateEventTransport(dateFormat string) CreateEventTransport {

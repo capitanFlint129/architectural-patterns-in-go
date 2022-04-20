@@ -2,11 +2,8 @@ package transport
 
 import (
 	"encoding/json"
-	"net/http"
-	"strconv"
-	"time"
-
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
+	"net/http"
 )
 
 type updateEventTransport struct {
@@ -15,37 +12,18 @@ type updateEventTransport struct {
 
 func (c *updateEventTransport) DecodeRequest(r *http.Request) (types.UpdateEventHandlerData, error) {
 	var (
-		userId    int
-		eventName string
-		date      time.Time
-		newDate   time.Time
-		err       error
+		data types.UpdateEventHandlerData
+		err  error
 	)
-	userId, err = strconv.Atoi(r.FormValue("user_id"))
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&data)
 	if err != nil {
 		return types.UpdateEventHandlerData{}, err
 	}
-	eventName = r.FormValue("name")
-	date, err = time.Parse(c.dateFormat, r.FormValue("date"))
 	if err != nil {
 		return types.UpdateEventHandlerData{}, err
 	}
-	newEventName := r.FormValue("new_name")
-	newDate, err = time.Parse(c.dateFormat, r.FormValue("new_date"))
-	if err != nil {
-		return types.UpdateEventHandlerData{}, err
-	}
-	return types.UpdateEventHandlerData{
-		UserId: userId,
-		Event: types.Event{
-			Name: eventName,
-			Date: date,
-		},
-		NewEvent: types.Event{
-			Name: newEventName,
-			Date: newDate,
-		},
-	}, nil
+	return data, nil
 }
 
 func (c *updateEventTransport) EncodeResponse(w http.ResponseWriter, event types.Event) error {
