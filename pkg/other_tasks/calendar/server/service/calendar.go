@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"sort"
+
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
 )
 
@@ -20,6 +22,10 @@ func (c *calendar) CreateEvent(ctx context.Context, data types.EventHandlerData)
 	_, ok := c.events[data.UserId]
 	if !ok {
 		c.events[data.UserId] = make(map[string]types.Event)
+	}
+	_, ok = c.events[data.UserId][data.Event.Name]
+	if ok {
+		return types.Event{}, types.ErrorEventAlreadyExists
 	}
 	c.events[data.UserId][data.Event.Name] = data.Event
 	return data.Event, nil
@@ -53,6 +59,9 @@ func (c *calendar) EventsForPeriod(ctx context.Context, data types.DateIntervalH
 			eventsForPeriod = append(eventsForPeriod, event)
 		}
 	}
+	sort.SliceStable(eventsForPeriod, func(i, j int) bool {
+		return eventsForPeriod[i].Date.Before(eventsForPeriod[j].Date)
+	})
 	return eventsForPeriod, nil
 }
 
