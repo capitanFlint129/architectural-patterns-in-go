@@ -39,7 +39,7 @@ const (
 	eventsForPeriodHttpMethod = http.MethodGet
 )
 
-var serviceError = errors.New("Service error")
+var serviceError = errors.New("service error")
 
 type createEventResult struct {
 	event types.Event
