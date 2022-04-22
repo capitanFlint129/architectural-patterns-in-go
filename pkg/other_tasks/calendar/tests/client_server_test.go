@@ -3,6 +3,15 @@ package tests
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/client/client"
 	clientTransport "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/client/transport"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/server/handler"
@@ -10,13 +19,6 @@ import (
 	serverTransport "github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/server/transport"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/tests/mocks"
 	"github.com/capitanFlint129/architectural-patterns-in-go/pkg/other_tasks/calendar/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
-	"testing"
-	"time"
 )
 
 const (
